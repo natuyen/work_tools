@@ -5,10 +5,12 @@ def WORK_DIR_NODE_LINUX
 def NODE_DEVMGR_1 = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR_1
 
-def GIT_BRANCH = "${GIT_BRANCH}"
-def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
-def ARCHIVE_FOLDER = "${env.WORKSPACE}/${GIT_BRANCH}_${env.BUILD_ID}"
 
+def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
+
+def GIT_BRANCH = "${GIT_BRANCH}"
+def GAROON_VERSION_UP = "${GAROON_VERSION_UP}"
+def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 
 currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
@@ -21,12 +23,13 @@ try {
             
                 // node download archive
                 node(NODE_LINUX) {
-                    WORK_DIR_NODE_LINUX = "${ARCHIVE_FOLDER}"
+                    WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
                 }// node
 
                 // node upgrade archive
                 node(NODE_DEVMGR_1) {
-                    WORK_DIR_NODE_DEVMGR_1 = "${ARCHIVE_FOLDER}"
+                    //WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+                    WORK_DIR_NODE_DEVMGR_1 = "/home/tuyen-nguyen/garoon_archive/${ARCHIVE_FOLDER}"
                 }// node
 
                 // download archive
@@ -61,16 +64,17 @@ try {
                             script: "domaindb ss dump ${SERVICE_SET} | jq -r '.version'",
                             returnStdout: true
                         ).trim()
-                        echo "GAROON_VERSION: ${GAROON_VERSION}"
-                        currentBuild.description += "<li>CYDEC_VERSION: ${GAROON_VERSION}"
+                        echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
+                        currentBuild.description += "<li>CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
 
-                        sh "cp -r /home/qa/${GAROON_VERSION}/* ."
+                        //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
+                        sh "cp -r /home/qa/${GAROON_VERSION_UP}/* ."
                         sh "rm -rf garoon-GRF*.tgz"
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        sh "echo 'Update new version ${GAROON_VERSION} for forest site'"
-                        sh "cydecc ss update --force-maintenance -a Slash -a Garoon $SERVICE_SET ${GAROON_VERSION} ${WORK_DIR_NODE_DEVMGR_1}"
+                        sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
+                        sh "cydecc ss update --force-maintenance -a Slash -a Garoon $SERVICE_SET ${GAROON_VERSION_UP} ${WORK_DIR_NODE_DEVMGR_1}"
                         sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                     }
                 }// node
