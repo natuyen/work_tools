@@ -77,7 +77,7 @@ try {
                         sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
                         //sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
                         sh "cydecc ss update --force-maintenance -a Slash -a Garoon $SERVICE_SET ${WORK_DIR_NODE_DEVMGR_1}"
-                        sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
+                        //sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                     }
                 }// node
             }// stage
