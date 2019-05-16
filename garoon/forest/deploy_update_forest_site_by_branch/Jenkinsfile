@@ -1,0 +1,97 @@
+#! /bin/groovy
+
+def NODE_LINUX = "tcb-garoon-test-base"
+def WORK_DIR_NODE_LINUX
+def NODE_DEVMGR_1 = "devmgr-1"
+def WORK_DIR_NODE_DEVMGR_1
+
+def GIT_BRANCH = "${GIT_BRANCH}"
+def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
+def ARCHIVE_FOLDER = "${env.WORKSPACE}/${GIT_BRANCH}_${env.BUILD_ID}"
+
+
+currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
+currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
+currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+
+try {
+    timestamps {
+        timeout(time: 90, unit: "MINUTES") {
+            stage("before process") {
+            
+                // node download archive
+                node(NODE_LINUX) {
+                    WORK_DIR_NODE_LINUX = "${ARCHIVE_FOLDER}"
+                }// node
+
+                // node upgrade archive
+                node(NODE_DEVMGR_1) {
+                    WORK_DIR_NODE_DEVMGR_1 = "${ARCHIVE_FOLDER}"
+                }// node
+
+                // download archive
+                node(NODE_LINUX) {
+                    dir(WORK_DIR_NODE_LINUX){
+                        sh "mkdir -p garoon"
+                        //sh "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest"
+                        def mount_ret = sh(returnStdout: true, script: "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest")
+                        echo "mount_ret: ${mount_ret}"
+                        if (mount_ret != ''){
+                            sh "umount garoon"
+                        }
+                        def archiveFilePath
+                        if (GAROON_BUILD_NUMBER == ''){
+                            archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
+                        }
+                        else {
+                            archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/*_${GAROON_BUILD_NUMBER}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
+                        }
+                        sh "cp ${archiveFilePath} ."
+                        sh "umount garoon"
+                        currentBuild.description += "<li>ARCHIVE: ${archiveFilePath}"
+                        
+                        INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
+                        stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
+                    }
+                }// node
+
+                node(NODE_DEVMGR_1) {
+                    dir(WORK_DIR_NODE_DEVMGR_1){
+                        def GAROON_VERSION = sh(
+                            script: "domaindb ss dump ${SERVICE_SET} | jq -r '.version'",
+                            returnStdout: true
+                        ).trim()
+                        echo "GAROON_VERSION: ${GAROON_VERSION}"
+                        currentBuild.description += "<li>CYDEC_VERSION: ${GAROON_VERSION}"
+
+                        sh "cp -r /home/qa/${GAROON_VERSION}/* ."
+                        sh "rm -rf garoon-GRF*.tgz"
+                        unstash name: "garoon archive"
+                        sh "ls -ltr ."
+
+                        sh "echo 'Update new version ${GAROON_VERSION} for forest site'"
+                        sh "cydecc ss update --force-maintenance -a Slash -a Garoon $SERVICE_SET ${GAROON_VERSION} ${WORK_DIR_NODE_DEVMGR_1}"
+                        sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
+                    }
+                }// node
+            }// stage
+        }// timeout
+    }// timestamps
+} catch (error) {
+    throw error
+} finally {
+    // cleanup
+    timeout(time: 30, unit: "MINUTES") {
+        stage("cleanup") {
+            def builders = [:]
+            [NODE_LINUX, NODE_DEVMGR_1].each {
+                builders[it] = {
+                    node(it) {
+                        sh "rm -rf ${ARCHIVE_FOLDER}"
+                    }
+                }
+            }
+            parallel builders
+        }// stage
+    }
+}
