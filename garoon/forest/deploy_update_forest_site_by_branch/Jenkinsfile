@@ -91,7 +91,7 @@ try {
             [NODE_LINUX, NODE_DEVMGR_1].each {
                 builders[it] = {
                     node(it) {
-                        sh "rm -rf ${ARCHIVE_FOLDER}"
+                        sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
                     }
                 }
             }
