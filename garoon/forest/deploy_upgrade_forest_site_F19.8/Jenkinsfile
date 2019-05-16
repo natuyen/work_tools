@@ -14,14 +14,34 @@ currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>TARGET: ${GIT_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
+echo "GAROON_CURRENT_VERSION: ${GAROON_CURRENT_VERSION}"
+echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
+
 echo "GIT_BRANCH: ${GIT_BRANCH}"
 echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+echo "GAROONUPDATE_NEW_ARCHIVE_BUILD_NUMBER: ${UPDATE_NEW_ARCHIVE}"
+
 echo "GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 
 try {
     timestamps {
         timeout(time: 90, unit: "MINUTES") {
+            
+                        {
+                            echo "Destroy and Deploy again Forest site"
+
+                        }
+            stage('Destroy and Deploy Forest site') {
+                if (${DESTROY_AND_DEPLOY} == true){
+                    withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                        sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                        sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
+                    }
+                }
+            }
+
             stage("before process") {
             
                 // node download archive
@@ -67,6 +87,10 @@ try {
                             returnStdout: true
                         ).trim()
                         echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
+
+                        
+                        
+
 
                         //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
                         sh "cp -r /home/qa/${GAROON_VERSION_UP}/* ."
