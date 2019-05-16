@@ -5,6 +5,7 @@ def WORK_DIR_NODE_LINUX
 def NODE_DEVMGR_1 = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR_1
 
+def DESTROY_AND_DEPLOY = "${DESTROY_AND_DEPLOY}"
 def GIT_BRANCH = "${GIT_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
 def GAROON_VERSION_UP = "${GAROON_VERSION_UP}"
@@ -30,7 +31,7 @@ try {
         timeout(time: 90, unit: "MINUTES") {
             stage('Destroy and Deploy Forest site') {
                 node(NODE_DEVMGR_1) {
-                    if(env.DESTROY_AND_DEPLOY == true){
+                    if(DESTROY_AND_DEPLOY == true){
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
                             sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
