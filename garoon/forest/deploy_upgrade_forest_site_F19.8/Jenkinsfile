@@ -30,11 +30,12 @@ try {
         timeout(time: 90, unit: "MINUTES") {
             stage('Destroy and Deploy Forest site') {
                 node(NODE_DEVMGR_1) {
-                    //def destroy_and_deploy = ${DESTROY_AND_DEPLOY}
+                    if(env.DESTROY_AND_DEPLOY == true){
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
                             sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
                         }
+                    }
                 }
                 
             }
