@@ -32,14 +32,12 @@ try {
                 // node upgrade archive
                 node(NODE_DEVMGR_1) {
                     WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
-                    //WORK_DIR_NODE_DEVMGR_1 = "/home/tuyen-nguyen/garoon_archive/${ARCHIVE_FOLDER}"
                 }// node
 
                 // download archive
                 node(NODE_LINUX) {
                     dir(WORK_DIR_NODE_LINUX){
                         sh "mkdir -p garoon"
-                        //sh "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest"
                         def mount_ret = sh(returnStdout: true, script: "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest")
                         echo "mount_ret: ${mount_ret}"
                         if (mount_ret != ''){
@@ -52,9 +50,9 @@ try {
                         else {
                             archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/*_${GAROON_BUILD_NUMBER}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
                         }
+                        echo "ARCHIVE: ${archiveFilePath}"
                         sh "cp ${archiveFilePath} ."
                         sh "umount garoon"
-                        echo "ARCHIVE: ${archiveFilePath}"
                         
                         INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
                         echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
@@ -76,7 +74,7 @@ try {
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        sh "echo 'Upgrade to new version ${GAROON_VERSION_UP} for forest site'"
+                        sh "echo 'Upgrade to new version ${GAROON_VERSION_UP} for Forest site'"
                         sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
                         sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
