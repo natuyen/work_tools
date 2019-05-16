@@ -28,11 +28,6 @@ echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 try {
     timestamps {
         timeout(time: 90, unit: "MINUTES") {
-            
-                        {
-                            echo "Destroy and Deploy again Forest site"
-
-                        }
             stage('Destroy and Deploy Forest site') {
                 if (${DESTROY_AND_DEPLOY} == true){
                     withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
