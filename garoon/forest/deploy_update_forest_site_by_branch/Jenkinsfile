@@ -57,6 +57,7 @@ try {
                         echo "ARCHIVE: ${archiveFilePath}"
                         
                         INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
+                        echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
                         stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
                     }
                 }// node
