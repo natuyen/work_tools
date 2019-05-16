@@ -17,10 +17,11 @@ def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 // currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
 // currentBuild.description += "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
 
-echo "<li>SERVICE_SET: ${SERVICE_SET}"
-echo "<li>GIT_BRANCH: ${GIT_BRANCH}"
-echo "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
-echo "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+echo "SERVICE_SET: ${SERVICE_SET}"
+echo "GIT_BRANCH: ${GIT_BRANCH}"
+echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+echo "GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 
 try {
     timestamps {
@@ -76,7 +77,7 @@ try {
                         //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
                         sh "cp -r /home/qa/${GAROON_VERSION_UP}/* ."
                         sh "rm -rf garoon-GRF*.tgz"
-                        unstash name: "garoon archive"
+                        //unstash name: "garoon archive"
                         sh "ls -ltr ."
 
                         sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
