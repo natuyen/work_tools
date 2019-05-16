@@ -12,10 +12,15 @@ def GIT_BRANCH = "${GIT_BRANCH}"
 def GAROON_VERSION_UP = "${GAROON_VERSION_UP}"
 def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 
-currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
-currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
-currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
-currentBuild.description += "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+// currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
+// currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
+// currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+// currentBuild.description += "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+
+echo "<li>SERVICE_SET: ${SERVICE_SET}"
+echo "<li>GIT_BRANCH: ${GIT_BRANCH}"
+echo "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+echo "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
 
 try {
     timestamps {
@@ -76,7 +81,7 @@ try {
 
                         sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
                         //sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
-                        sh "cydecc ss update --force-maintenance -a Slash -a Garoon $SERVICE_SET ${WORK_DIR_NODE_DEVMGR_1}"
+                        sh "cydecc ss update --force-maintenance -a Garoon $SERVICE_SET ${WORK_DIR_NODE_DEVMGR_1}"
                         //sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                     }
                 }// node
