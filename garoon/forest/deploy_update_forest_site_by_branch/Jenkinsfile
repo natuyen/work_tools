@@ -76,6 +76,7 @@ try {
 
                         sh "echo 'Upgrade to new version ${GAROON_VERSION_UP} for Forest site'"
                         sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
+                        sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
                         sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
                     }
