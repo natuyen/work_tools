@@ -5,17 +5,13 @@ def WORK_DIR_NODE_LINUX
 def NODE_DEVMGR_1 = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR_1
 
-
-def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
-
 def GIT_BRANCH = "${GIT_BRANCH}"
+def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
 def GAROON_VERSION_UP = "${GAROON_VERSION_UP}"
 def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 
-// currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
-// currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
-// currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
-// currentBuild.description += "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
+currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
+currentBuild.description += "<li>TARGET: ${GIT_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
 echo "GIT_BRANCH: ${GIT_BRANCH}"
