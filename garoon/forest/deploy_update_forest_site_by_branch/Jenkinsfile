@@ -15,6 +15,7 @@ def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>GIT_BRANCH: ${GIT_BRANCH}"
 currentBuild.description += "<li>GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+currentBuild.description += "<li>GAROON_VERSION_UP: ${GAROON_VERSION_UP}"
 
 try {
     timestamps {
@@ -28,8 +29,8 @@ try {
 
                 // node upgrade archive
                 node(NODE_DEVMGR_1) {
-                    //WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
-                    WORK_DIR_NODE_DEVMGR_1 = "/home/tuyen-nguyen/garoon_archive/${ARCHIVE_FOLDER}"
+                    WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+                    //WORK_DIR_NODE_DEVMGR_1 = "/home/tuyen-nguyen/garoon_archive/${ARCHIVE_FOLDER}"
                 }// node
 
                 // download archive
