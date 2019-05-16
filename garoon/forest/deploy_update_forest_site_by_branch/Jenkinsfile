@@ -76,10 +76,10 @@ try {
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
-                        sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
+                        sh "echo 'Upgrade to new version ${GAROON_VERSION_UP} for forest site'"
+                        sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                        //sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
+                        sh "domaindb ss version ${SERVICE_SET} ${GAROON_VERSION_UP}"
                     }
                 }// node
             }// stage
