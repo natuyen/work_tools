@@ -58,7 +58,7 @@ try {
                         }
                         sh "cp ${archiveFilePath} ."
                         sh "umount garoon"
-                        currentBuild.description += "<li>ARCHIVE: ${archiveFilePath}"
+                        echo "ARCHIVE: ${archiveFilePath}"
                         
                         INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
                         stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
@@ -72,12 +72,11 @@ try {
                             returnStdout: true
                         ).trim()
                         echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
-                        currentBuild.description += "<li>CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
 
                         //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
                         sh "cp -r /home/qa/${GAROON_VERSION_UP}/* ."
-                        //sh "rm -rf garoon-GRF*.tgz"
-                        //unstash name: "garoon archive"
+                        sh "rm -rf garoon-GRF*.tgz"
+                        unstash name: "garoon archive"
                         sh "ls -ltr ."
 
                         sh "echo 'Update new version ${GAROON_VERSION_UP} for forest site'"
@@ -95,15 +94,25 @@ try {
     // cleanup
     timeout(time: 30, unit: "MINUTES") {
         stage("cleanup") {
-            def builders = [:]
-            [NODE_LINUX, NODE_DEVMGR_1].each {
-                builders[it] = {
-                    node(it) {
-                        sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
-                    }
-                }
+            node(NODE_LINUX) {
+                sh "rm -rf ${WORK_DIR_NODE_LINUX}"
             }
-            parallel builders
+
+            node(NODE_DEVMGR_1) {
+                sh "rm -rf ${WORK_DIR_NODE_DEVMGR_1}"
+
+            }// node
+
+            // def builders = [:]
+
+            // [NODE_LINUX, NODE_DEVMGR_1].each {
+            //     builders[it] = {
+            //         node(it) {
+            //             sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+            //         }
+            //     }
+            // }
+            // parallel builders
         }// stage
     }
 }
