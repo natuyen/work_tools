@@ -76,7 +76,7 @@ try {
 
                         //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
                         sh "cp -r /home/qa/${GAROON_VERSION_UP}/* ."
-                        sh "rm -rf garoon-GRF*.tgz"
+                        //sh "rm -rf garoon-GRF*.tgz"
                         //unstash name: "garoon archive"
                         sh "ls -ltr ."
 
