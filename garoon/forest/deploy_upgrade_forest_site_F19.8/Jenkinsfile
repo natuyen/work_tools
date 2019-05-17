@@ -140,6 +140,9 @@ try {
     // cleanup
     timeout(time: 30, unit: "MINUTES") {
         stage("cleanup") {
+            if(!IS_UPGRADE_ARCHIVE){
+                return;
+            }
             node(NODE_LINUX) {
                 sh "rm -rf ${WORK_DIR_NODE_LINUX}"
             }
