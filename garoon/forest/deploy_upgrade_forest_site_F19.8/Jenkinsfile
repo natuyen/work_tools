@@ -36,10 +36,10 @@ if (GIT_BRANCH != ''){
 }
 
 
-def IS_UPGRADE_VERSION
-if (GAROON_NEW_VERSION != ''){
-    IS_UPGRADE_VERSION = true
-}
+// def IS_UPGRADE_VERSION
+// if (GAROON_NEW_VERSION != ''){
+//     IS_UPGRADE_VERSION = true
+// }
 
 try {
     timestamps {
