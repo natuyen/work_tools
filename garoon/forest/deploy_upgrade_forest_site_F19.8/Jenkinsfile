@@ -40,7 +40,7 @@ if (GAROON_NEW_VERSION != ''){
 }
 
 try {
-    //timestamps {
+    timestamps {
         timeout(time: 90, unit: "MINUTES") {
             stage('Destroy and Deploy Forest site') {
                 node(NODE_DEVMGR_1) {
@@ -162,5 +162,5 @@ try {
             // }
             // parallel builders
         }// stage
-    //}
+    }
 }
