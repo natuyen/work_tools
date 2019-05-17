@@ -75,11 +75,12 @@ try {
                 node(NODE_LINUX) {
                     dir(WORK_DIR_NODE_LINUX){
                         sh "mkdir -p garoon"
-                        def mount_ret = sh(returnStdout: true, script: "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest")
-                        echo "mount_ret: ${mount_ret}"
-                        // if (mount_ret != ''){
-                        //     sh "umount garoon"
-                        // }
+                        def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
+                                            if ! mountpoint -q "garoon"; then
+                                                mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest
+                                            fi
+                                        '''.stripIndent())
+
                         def archiveFilePath
                         if (GAROON_BUILD_NUMBER == ''){
                             archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
