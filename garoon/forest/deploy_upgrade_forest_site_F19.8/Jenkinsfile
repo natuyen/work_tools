@@ -10,7 +10,7 @@ def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 def GIT_BRANCH = "${GIT_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
 
-//def GAROON_NEW_VERSION = "${GAROON_NEW_VERSION}"
+def GAROON_NEW_VERSION = "${GAROON_NEW_VERSION}"
 
 def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
 
@@ -35,11 +35,10 @@ if (GIT_BRANCH != ''){
     IS_UPGRADE_ARCHIVE = true
 }
 
-
-// def IS_UPGRADE_VERSION
-// if (GAROON_NEW_VERSION != ''){
-//     IS_UPGRADE_VERSION = true
-// }
+def IS_UPGRADE_VERSION
+if (GAROON_NEW_VERSION != ''){
+    IS_UPGRADE_VERSION = true
+}
 
 try {
     timestamps {
@@ -47,19 +46,22 @@ try {
             stage('Destroy and Deploy Forest site') {
                 node(NODE_DEVMGR_1) {
                     if(DESTROY_AND_DEPLOY){
-                        echo 'run here'
-                        // withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                        //     sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                        //     sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
-                        // }
+                        echo "Recreate Forest site..."
+                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
+                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
+                        }
+                        echo "Recreate Forest site done."
                     }
                 }
                 
             }
 
-
-            stage("before process") {
-            
+            stage("Download archive for update") {
+                if(!IS_UPGRADE_ARCHIVE){
+                    return;
+                }
                 // node download archive
                 node(NODE_LINUX) {
                     WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
@@ -95,7 +97,9 @@ try {
                         stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
                     }
                 }// node
+            }
 
+            stage("Update archive") {
                 node(NODE_DEVMGR_1) {
                     dir(WORK_DIR_NODE_DEVMGR_1){
                         def GAROON_VERSION = sh(
