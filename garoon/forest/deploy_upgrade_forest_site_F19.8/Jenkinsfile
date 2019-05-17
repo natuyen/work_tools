@@ -78,9 +78,9 @@ try {
                         sh "mkdir -p garoon"
                         def mount_ret = sh(returnStdout: true, script: "mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest")
                         echo "mount_ret: ${mount_ret}"
-                        if (mount_ret != ''){
-                            sh "umount garoon"
-                        }
+                        // if (mount_ret != ''){
+                        //     sh "umount garoon"
+                        // }
                         def archiveFilePath
                         if (GAROON_BUILD_NUMBER == ''){
                             archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
@@ -99,7 +99,10 @@ try {
                 }// node
             }
 
-            stage("Update archive") {
+            stage("Update archive or upgrade version") {
+                if(!IS_UPGRADE_ARCHIVE){
+                    return;
+                }
                 node(NODE_DEVMGR_1) {
                     dir(WORK_DIR_NODE_DEVMGR_1){
                         def GAROON_VERSION = sh(
@@ -107,18 +110,25 @@ try {
                             returnStdout: true
                         ).trim()
                         echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
+                        if(IS_UPGRADE_VERSION){
+                            sh "echo 'Upgrade to new version ${GAROON_NEW_VERSION} for Forest site'"
+                            sh "cp -r /home/qa/${GAROON_NEW_VERSION}/* ."
+                        }
+                        else{
+                            sh "echo 'Upgrade to new archive for Forest site'"
+                            sh "cp -r /home/qa/${GAROON_CURRENT_VERSION}/* ."
+                        }
 
-                        //sh "cp -r /home/qa/${GAROON_VERSION}/* ."
-                        sh "cp -r /home/qa/${GAROON_NEW_VERSION}/* ."
                         sh "rm -rf garoon-GRF*.tgz"
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        sh "echo 'Upgrade to new version ${GAROON_NEW_VERSION} for Forest site'"
                         sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                         sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                        sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
+                        if(IS_UPGRADE_VERSION){
+                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
+                        }
                     }
                 }// node
             }// stage
