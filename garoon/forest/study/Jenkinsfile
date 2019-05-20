@@ -1,7 +1,7 @@
 #! /bin/groovy
 
 NODE_LINUX = "tcb-garoon-test-base"
-def WORK_DIR_NODE_LINUX
+WORK_DIR_NODE_LINUX
 def NODE_DEVMGR_1 = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR_1
 
