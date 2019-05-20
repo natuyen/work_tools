@@ -21,6 +21,7 @@ echo "SERVICE_SET: ${SERVICE_SET}"
 echo "GAROON_CURRENT_VERSION: ${GAROON_CURRENT_VERSION}"
 echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
 
+echo "DESTROY_AND_DEPLOY_WITH_NEW_BRANCH: ${DESTROY_AND_DEPLOY_WITH_NEW_BRANCH}"
 echo "GIT_BRANCH: ${GIT_BRANCH}"
 echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
 
@@ -140,7 +141,7 @@ try {
                             sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
                             echo "Recreate Forest site done."
                         }
-                        else {// upgrade new archive
+                        else {// update archive ofupgrade new archive
                             sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                             sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
                             sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
