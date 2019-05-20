@@ -48,15 +48,6 @@ try {
         timeout(time: 90, unit: "MINUTES") {
             stage('Destroy and Deploy Forest site') {
                 node(NODE_DEVMGR_1) {
-                    if(DESTROY_AND_DEPLOY){
-                        echo "Recreate Forest site..."
-                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
-                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
-                        }
-                        echo "Recreate Forest site done."
-                    }
                     if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
                         echo "Recreate Forest site..."
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
@@ -65,6 +56,16 @@ try {
                         }
                         
                     }
+                    else if(DESTROY_AND_DEPLOY){
+                        echo "Recreate Forest site..."
+                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
+                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
+                        }
+                        echo "Recreate Forest site done."
+                    }
+                    
                 }
                 
             }
