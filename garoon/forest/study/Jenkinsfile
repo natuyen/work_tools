@@ -100,7 +100,7 @@ try {
                     if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
                         echo "Recreate Forest site..."
                         echo "Downloading archive..."
-                        download_archive(${GIT_BRANCH}, ${GAROON_BUILD_NUMBER}, 'garoon-GRF*.tgz')
+                        download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
                         sh "cp -r /home/qa/${GAROON_CURRENT_VERSION}/* ."
                         replace_archive()
 
