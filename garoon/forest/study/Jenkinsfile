@@ -1,6 +1,6 @@
 #! /bin/groovy
 
-def NODE_LINUX = "tcb-garoon-test-base"
+NODE_LINUX = "tcb-garoon-test-base"
 def WORK_DIR_NODE_LINUX
 def NODE_DEVMGR_1 = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR_1
@@ -101,7 +101,7 @@ try {
                         echo "Recreate Forest site..."
                         echo "Downloading archive..."
                         download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
-                        sh "cp -r /home/qa/${GAROON_CURRENT_VERSION}/* ."
+                        sh "cp -rf /home/qa/${GAROON_CURRENT_VERSION}/* ."
                         replace_archive()
 
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
