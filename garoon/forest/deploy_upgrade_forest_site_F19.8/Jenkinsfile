@@ -7,9 +7,9 @@ def WORK_DIR_NODE_DEVMGR_1
 
 def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
+def DESTROY_AND_DEPLOY_WITH_NEW_BRANCH = Boolean.valueOf("${DESTROY_AND_DEPLOY_WITH_GIT_BRANCH}");
 def GIT_BRANCH = "${GIT_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
-
 def GAROON_NEW_VERSION = "${GAROON_NEW_VERSION}"
 
 def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
@@ -33,6 +33,9 @@ def IS_UPGRADE_ARCHIVE
 if (GIT_BRANCH != ''){
     IS_UPGRADE_ARCHIVE = true
 }
+if (DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
+    IS_UPGRADE_ARCHIVE = true
+}
 
 def IS_UPGRADE_VERSION
 if (GAROON_NEW_VERSION != ''){
@@ -52,6 +55,14 @@ try {
                             sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
                         }
                         echo "Recreate Forest site done."
+                    }
+                    if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
+                        echo "Recreate Forest site..."
+                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
+                        }
+                        
                     }
                 }
                 
@@ -110,6 +121,7 @@ try {
                             returnStdout: true
                         ).trim()
                         echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
+
                         if(IS_UPGRADE_VERSION){
                             sh "echo 'Upgrade to new version ${GAROON_NEW_VERSION} for Forest site'"
                             sh "cp -r /home/qa/${GAROON_NEW_VERSION}/* ."
@@ -123,9 +135,17 @@ try {
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
-                        sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
-                        sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
+                        // destroy and deploy with git branch
+                        if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
+                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
+                            echo "Recreate Forest site done."
+                        }
+                        else {// upgrade new archive
+                            sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
+                            sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
+                            sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
+                        }
+                        
                         if(IS_UPGRADE_VERSION){
                             sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
                         }
