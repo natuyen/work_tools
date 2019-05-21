@@ -1,9 +1,9 @@
 #! /bin/groovy
 
 NODE_LINUX = "tcb-garoon-test-base"
-WORK_DIR_NODE_LINUX
-def NODE_DEVMGR_1 = "devmgr-1"
-def WORK_DIR_NODE_DEVMGR_1
+WORK_DIR_NODE_LINUX = ""
+NODE_DEVMGR_1 = "devmgr-1"
+WORK_DIR_NODE_DEVMGR_1 = ""
 
 def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
@@ -44,8 +44,6 @@ if (GAROON_NEW_VERSION != ''){
 }
 
 def download_archive(branch, buildNumber, pattern){
-    println(NODE_LINUX)
-    println(WORK_DIR_NODE_LINUX)
     stage("Download archive") {
         // download archive
         node(NODE_LINUX) {
