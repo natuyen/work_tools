@@ -1,10 +1,12 @@
 #! /bin/groovy
 
+# variable
 NODE_LINUX = "tcb-garoon-test-base"
 WORK_DIR_NODE_LINUX = ""
 NODE_DEVMGR_1 = "devmgr-1"
 WORK_DIR_NODE_DEVMGR_1 = ""
 
+def GAROON_CURRENT_VERSION
 def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
 def DESTROY_AND_DEPLOY_WITH_NEW_BRANCH = Boolean.valueOf("${DESTROY_AND_DEPLOY_WITH_GIT_BRANCH}");
@@ -18,6 +20,7 @@ currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>TARGET: ${GIT_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
+echo "GAROON_CURRENT_BRANCH: ${GAROON_CURRENT_BRANCH}"
 echo "GAROON_CURRENT_VERSION: ${GAROON_CURRENT_VERSION}"
 echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
 
@@ -45,7 +48,6 @@ if (GAROON_NEW_VERSION != ''){
 
 def download_archive(branch, buildNumber, pattern){
     stage("Download archive") {
-        // download archive
         node(NODE_LINUX) {
             dir(WORK_DIR_NODE_LINUX){
                 sh "mkdir -p garoon"
@@ -57,7 +59,7 @@ def download_archive(branch, buildNumber, pattern){
 
                 def archiveFilePath
                 if (buildNumber == ''){
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }
                 else {
                     archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
@@ -69,6 +71,8 @@ def download_archive(branch, buildNumber, pattern){
                 INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
                 echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
                 stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
+
+                return INSTALL_ARCHIVE_NAME
             }
         }// node
     }
@@ -80,6 +84,11 @@ def replace_archive(){
     sh "ls -ltr ."
 }
 
+def getForestVersion(archive_name){
+    return archive_name.substring(archive_name.indexOf("GRF")+3, archive_name.indexOf("_"))
+}
+
+// main process
 try {
     timestamps {
         timeout(time: 90, unit: "MINUTES") {
@@ -100,7 +109,9 @@ try {
                     if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
                         echo "Recreate Forest site..."
                         echo "Downloading archive..."
-                        download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
+                        def archive_name = download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
+                        GAROON_CURRENT_VERSION = getForestVersion(archive_name)
+                        echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
                         sh "cp -rf /home/qa/${GAROON_CURRENT_VERSION}/* ."
                         replace_archive()
 
