@@ -14,7 +14,7 @@ def GIT_BRANCH = "${GIT_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
 def GAROON_NEW_VERSION = "${GAROON_NEW_VERSION}"
 
-def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
+def ARCHIVE_FOLDER = "LEO_${env.BUILD_ID}"
 // contains archive forest version
 def ARCHIVE_FOLDER_VERSION
 
@@ -114,14 +114,12 @@ try {
                             echo "Downloading archive..."
                             def archive_name = download_archive(GAROON_CURRENT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
                             GAROON_CURRENT_VERSION = getForestVersion(archive_name)
-                            echo "-------archive_name:${archive_name}"
-                            echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
+                            echo "archive_name:${archive_name}"
+                            echo "GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
                             sh "cp -prf /home/qa/${GAROON_CURRENT_VERSION} ."
                             ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}"
                             dir(ARCHIVE_FOLDER_VERSION){
-                                sh "pwd"
                                 replace_archive()
-                                sh "ls -ltr ."
                             }
 
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
@@ -132,18 +130,6 @@ try {
                             echo "Recreate Forest site done."
                         }
                     }
-                    //if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
-                    
-                    // else if(DESTROY_AND_DEPLOY){
-                    //     echo "Recreate Forest site..."
-                    //     withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                    //         sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                    //         sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
-                    //         sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
-                    //     }
-                    //     echo "Recreate Forest site done."
-                    // }
-                    
                 }
                 
             }
@@ -206,18 +192,11 @@ try {
                         unstash name: "garoon archive"
                         sh "ls -ltr ."
 
-                        // destroy and deploy with git branch
-                        if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
-                            withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                                //sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                            }
-                            echo "Recreate Forest site done."
-                        }
-                        else {// update archive ofupgrade new archive
+                        
+                        // update archive ofupgrade new archive
                             sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
                             sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
                             sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                        }
                         
                         if(IS_UPGRADE_VERSION){
                             sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
