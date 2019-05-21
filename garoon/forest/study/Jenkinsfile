@@ -116,7 +116,7 @@ try {
                             GAROON_CURRENT_VERSION = getForestVersion(archive_name)
                             echo "-------archive_name:${archive_name}"
                             echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
-                            ARCHIVE_FOLDER_VERSION = ${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}
+                            ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}"
                             sh "cp -rf /home/qa/${GAROON_CURRENT_VERSION}/* ${ARCHIVE_FOLDER_VERSION}"
                             replace_archive()
 
