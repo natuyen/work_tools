@@ -109,7 +109,7 @@ try {
                     if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
                         echo "Recreate Forest site..."
                         echo "Downloading archive..."
-                        def archive_name = download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
+                        def archive_name = download_archive(GAROON_CURRENT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
                         GAROON_CURRENT_VERSION = getForestVersion(archive_name)
                         echo "-------archive_name:${archive_name}"
                         echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
