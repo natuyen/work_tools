@@ -119,7 +119,7 @@ try {
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
                             sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
-                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
+                            //sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
                         }
                         
                     }
