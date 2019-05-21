@@ -22,13 +22,10 @@ currentBuild.description += "<li>TARGET: ${GAROON_NEW_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
 echo "GAROON_CURRENT_BRANCH: ${GAROON_CURRENT_BRANCH}"
-echo "GAROON_CURRENT_VERSION: ${GAROON_CURRENT_VERSION}"
 echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
 
-echo "DESTROY_AND_DEPLOY_WITH_NEW_BRANCH: ${DESTROY_AND_DEPLOY_WITH_NEW_BRANCH}"
 echo "GAROON_NEW_BRANCH: ${GAROON_NEW_BRANCH}"
 echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
-
 echo "GAROON_NEW_VERSION: ${GAROON_NEW_VERSION}"
 
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"\
@@ -180,12 +177,13 @@ try {
                             replace_archive()
                         }
 
-                        // update archive ofupgrade new archive
+                        // update archive of upgrade new archive
+                        echo "Upgrade to new archive for Forest site ${GAROON_NEW_VERSION}"
                         sh "update-garoon-static ${ARCHIVE_FOLDER_VERSION}/garoon*"
                         sh "update-garuda-static ${ARCHIVE_FOLDER_VERSION}/cbmwcloud*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                         sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
-
+                        echo "Update archive / upgrade version done."
                         // def GAROON_VERSION = sh(
                         //     script: "domaindb ss dump ${SERVICE_SET} | jq -r '.version'",
                         //     returnStdout: true
