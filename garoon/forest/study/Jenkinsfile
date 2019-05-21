@@ -44,6 +44,8 @@ if (GAROON_NEW_VERSION != ''){
 }
 
 def download_archive(branch, buildNumber, pattern){
+    println(NODE_LINUX)
+    println(WORK_DIR_NODE_LINUX)
     stage("Download archive") {
         // download archive
         node(NODE_LINUX) {
