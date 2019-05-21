@@ -111,6 +111,7 @@ try {
                         echo "Downloading archive..."
                         def archive_name = download_archive(GIT_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
                         GAROON_CURRENT_VERSION = getForestVersion(archive_name)
+                        echo "-------archive_name:${archive_name}"
                         echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
                         sh "cp -rf /home/qa/${GAROON_CURRENT_VERSION}/* ."
                         replace_archive()
@@ -197,7 +198,7 @@ try {
                         // destroy and deploy with git branch
                         if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                                sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
+                                //sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
                             }
                             echo "Recreate Forest site done."
                         }
