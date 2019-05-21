@@ -1,6 +1,6 @@
 #! /bin/groovy
 
-# variable
+// variable
 NODE_LINUX = "tcb-garoon-test-base"
 WORK_DIR_NODE_LINUX = ""
 NODE_DEVMGR_1 = "devmgr-1"
