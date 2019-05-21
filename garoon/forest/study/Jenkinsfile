@@ -67,7 +67,7 @@ def download_archive(branch, buildNumber, pattern){
                     archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }
                 echo "archiveFilePath: ${archiveFilePath}"
-                sh "cp ${archiveFilePath} ."
+                sh "cp -rf ${archiveFilePath} ."
                 sh "umount garoon"
                 
                 INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
@@ -116,9 +116,13 @@ try {
                             GAROON_CURRENT_VERSION = getForestVersion(archive_name)
                             echo "-------archive_name:${archive_name}"
                             echo "-------GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
+                            sh "cp -prf /home/qa/${GAROON_CURRENT_VERSION} ."
                             ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}"
-                            sh "cp -rf /home/qa/${GAROON_CURRENT_VERSION}/* ${ARCHIVE_FOLDER_VERSION}"
-                            replace_archive()
+                            dir(ARCHIVE_FOLDER_VERSION){
+                                sh "pwd"
+                                replace_archive()
+                                sh "ls -ltr ."
+                            }
 
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                                 sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
