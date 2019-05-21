@@ -1,79 +1,85 @@
 #! /bin/groovy
 
-def NODE_LINUX = "tcb-garoon-test-base"
-def WORK_DIR_NODE_LINUX
-def NODE_DEVMGR_1 = "devmgr-1"
-def WORK_DIR_NODE_DEVMGR_1
+// variable
+NODE_LINUX = "tcb-garoon-test-base"
+WORK_DIR_NODE_LINUX = ""
+NODE_DEVMGR_1 = "devmgr-1"
+WORK_DIR_NODE_DEVMGR_1 = ""
 
+def GAROON_CURRENT_VERSION
 def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
-def DESTROY_AND_DEPLOY_WITH_NEW_BRANCH = Boolean.valueOf("${DESTROY_AND_DEPLOY_WITH_GIT_BRANCH}");
-def GIT_BRANCH = "${GIT_BRANCH}"
+def GAROON_NEW_BRANCH = "${GAROON_NEW_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
-def GAROON_NEW_VERSION = "${GAROON_NEW_VERSION}"
+def GAROON_NEW_VERSION
 
-def ARCHIVE_FOLDER = "${GIT_BRANCH}_${env.BUILD_ID}"
+def ARCHIVE_FOLDER = "LEO_${env.BUILD_ID}"
+// contains archive forest version
+def ARCHIVE_FOLDER_VERSION
 
 currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
-currentBuild.description += "<li>TARGET: ${GIT_BRANCH}"
+currentBuild.description += "<li>TARGET: ${GAROON_NEW_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
-echo "GAROON_CURRENT_VERSION: ${GAROON_CURRENT_VERSION}"
+echo "GAROON_CURRENT_BRANCH: ${GAROON_CURRENT_BRANCH}"
 echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
 
-echo "DESTROY_AND_DEPLOY_WITH_NEW_BRANCH: ${DESTROY_AND_DEPLOY_WITH_NEW_BRANCH}"
-echo "GIT_BRANCH: ${GIT_BRANCH}"
+echo "GAROON_NEW_BRANCH: ${GAROON_NEW_BRANCH}"
 echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
-
-echo "GAROON_NEW_VERSION: ${GAROON_NEW_VERSION}"
 
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"\
 
 // specify upgrade archive/ version
 def IS_UPGRADE_ARCHIVE
-if (GIT_BRANCH != ''){
-    IS_UPGRADE_ARCHIVE = true
-}
-if (DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
+if (GAROON_NEW_BRANCH != ''){
     IS_UPGRADE_ARCHIVE = true
 }
 
-def IS_UPGRADE_VERSION
-if (GAROON_NEW_VERSION != ''){
-    IS_UPGRADE_VERSION = true
+def download_archive(branch, buildNumber, pattern){
+    node(NODE_LINUX) {
+        dir(WORK_DIR_NODE_LINUX){
+            sh "mkdir -p garoon"
+            def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
+                                if ! mountpoint -q "garoon"; then
+                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest
+                                fi
+                            '''.stripIndent())
+
+            def archiveFilePath
+            if (buildNumber == ''){
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+            }
+            else {
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+            }
+            echo "archiveFilePath: ${archiveFilePath}"
+            sh "cp -rf ${archiveFilePath} ."
+            sh "umount garoon"
+            
+            INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
+            echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
+            stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
+
+            return INSTALL_ARCHIVE_NAME
+        }
+    }// node
 }
 
+def replace_archive(){
+    sh "rm -rf garoon-GRF*.tgz"
+    unstash name: "garoon archive"
+    sh "ls -ltr ."
+}
+
+def getForestVersion(archive_name){
+    return archive_name.substring(archive_name.indexOf("GRF")+3, archive_name.indexOf("_"))
+}
+
+// main process
 try {
     timestamps {
         timeout(time: 90, unit: "MINUTES") {
-            stage('Destroy and Deploy Forest site') {
-                node(NODE_DEVMGR_1) {
-                    if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
-                        echo "Recreate Forest site..."
-                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
-                        }
-                        
-                    }
-                    else if(DESTROY_AND_DEPLOY){
-                        echo "Recreate Forest site..."
-                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
-                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} /home/qa/${GAROON_CURRENT_VERSION}"
-                        }
-                        echo "Recreate Forest site done."
-                    }
-                    
-                }
-                
-            }
-
-            stage("Download archive for update") {
-                if(!IS_UPGRADE_ARCHIVE){
-                    return;
-                }
+            stage("Prepare") {
                 // node download archive
                 node(NODE_LINUX) {
                     WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
@@ -83,76 +89,60 @@ try {
                 node(NODE_DEVMGR_1) {
                     WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
                 }// node
-
-                // download archive
-                node(NODE_LINUX) {
-                    dir(WORK_DIR_NODE_LINUX){
-                        sh "mkdir -p garoon"
-                        def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
-                                            if ! mountpoint -q "garoon"; then
-                                                mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest
-                                            fi
-                                        '''.stripIndent())
-
-                        def archiveFilePath
-                        if (GAROON_BUILD_NUMBER == ''){
-                            archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
-                        }
-                        else {
-                            archiveFilePath = sh(returnStdout: true, script: "find garoon/${GIT_BRANCH}/*_${GAROON_BUILD_NUMBER}/ -type f -name 'garoon-GRF*.tgz' | sort -r | head -1").trim()
-                        }
-                        echo "ARCHIVE: ${archiveFilePath}"
-                        sh "cp ${archiveFilePath} ."
-                        sh "umount garoon"
-                        
-                        INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
-                        echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
-                        stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
-                    }
-                }// node
             }
 
-            stage("Update archive or upgrade version") {
+            stage('Destroy and Deploy Forest site') {
+                node(NODE_DEVMGR_1) {
+                    dir(WORK_DIR_NODE_DEVMGR_1){
+                        if(DESTROY_AND_DEPLOY){
+                            echo "Recreate Forest site..."
+                            echo "Downloading archive..."
+                            def archive_name = download_archive(GAROON_CURRENT_BRANCH, '', 'garoon-GRF*.tgz')
+                            GAROON_CURRENT_VERSION = getForestVersion(archive_name)
+                            echo "archive_name:${archive_name}"
+                            echo "GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
+                            sh "cp -prf /home/qa/${GAROON_CURRENT_VERSION} ."
+                            ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}"
+                            dir(ARCHIVE_FOLDER_VERSION){
+                                replace_archive()
+                            }
+
+                            withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                                sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                                sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
+                                sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
+                            }
+                            echo "Recreate Forest site done."
+                        }
+                    }
+                }
+                
+            }
+
+            stage("Update archive / upgrade version") {
                 if(!IS_UPGRADE_ARCHIVE){
                     return;
                 }
                 node(NODE_DEVMGR_1) {
                     dir(WORK_DIR_NODE_DEVMGR_1){
-                        def GAROON_VERSION = sh(
-                            script: "domaindb ss dump ${SERVICE_SET} | jq -r '.version'",
-                            returnStdout: true
-                        ).trim()
-                        echo "CURRENT_GAROON_VERSION: ${GAROON_VERSION}"
-
-                        if(IS_UPGRADE_VERSION){
-                            sh "echo 'Upgrade to new version ${GAROON_NEW_VERSION} for Forest site'"
-                            sh "cp -r /home/qa/${GAROON_NEW_VERSION}/* ."
-                        }
-                        else{
-                            sh "echo 'Upgrade to new archive for Forest site'"
-                            sh "cp -r /home/qa/${GAROON_CURRENT_VERSION}/* ."
+                        echo "Downloading archive..."
+                        def archive_name = download_archive(GAROON_NEW_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
+                        GAROON_NEW_VERSION = getForestVersion(archive_name)
+                        echo "archive_name:${archive_name}"
+                        echo "GAROON_NEW_VERSION:${GAROON_NEW_VERSION}"
+                        sh "cp -prf /home/qa/${GAROON_NEW_VERSION} ."
+                        ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_NEW_VERSION}"
+                        dir(ARCHIVE_FOLDER_VERSION){
+                            replace_archive()
                         }
 
-                        sh "rm -rf garoon-GRF*.tgz"
-                        unstash name: "garoon archive"
-                        sh "ls -ltr ."
-
-                        // destroy and deploy with git branch
-                        if(DESTROY_AND_DEPLOY_WITH_NEW_BRANCH){
-                            withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                                sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                            }
-                            echo "Recreate Forest site done."
-                        }
-                        else {// update archive ofupgrade new archive
-                            sh "update-garoon-static ${WORK_DIR_NODE_DEVMGR_1}/garoon*"
-                            sh "update-garuda-static ${WORK_DIR_NODE_DEVMGR_1}/cbmwcloud*"
-                            sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${WORK_DIR_NODE_DEVMGR_1}"
-                        }
-                        
-                        if(IS_UPGRADE_VERSION){
-                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
-                        }
+                        // update archive of upgrade new archive
+                        echo "Upgrade to new archive for Forest site ${GAROON_NEW_VERSION}"
+                        sh "update-garoon-static ${ARCHIVE_FOLDER_VERSION}/garoon*"
+                        sh "update-garuda-static ${ARCHIVE_FOLDER_VERSION}/cbmwcloud*"
+                        sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
+                        sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
+                        echo "Update archive / upgrade version done."
                     }
                 }// node
             }// stage
