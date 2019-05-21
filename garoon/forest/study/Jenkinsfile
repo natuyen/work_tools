@@ -11,6 +11,7 @@ def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
 def GAROON_NEW_BRANCH = "${GAROON_NEW_BRANCH}"
 def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
+def GAROON_NEW_VERSION
 
 def ARCHIVE_FOLDER = "LEO_${env.BUILD_ID}"
 // contains archive forest version
