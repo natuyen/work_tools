@@ -140,6 +140,8 @@ try {
                         echo "Upgrade to new archive for Forest site ${GAROON_NEW_VERSION}"
                         sh "update-garoon-static ${ARCHIVE_FOLDER_VERSION}/garoon*"
                         sh "update-garuda-static ${ARCHIVE_FOLDER_VERSION}/cbmwcloud*"
+                        sh "update-varaha-static ${ARCHIVE_FOLDER_VERSION}/cbofcloud*"
+                        sh "update-app-static Kintone ${ARCHIVE_FOLDER_VERSION}/kintone-static*"
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                         sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
                         echo "Update archive / upgrade version done."
@@ -162,7 +164,7 @@ try {
             }
 
             node(NODE_DEVMGR_1) {
-                sh "rm -rf ${WORK_DIR_NODE_DEVMGR_1}"
+                sh "rm -rf ${env.WORKSPACE}/LEO_*"
 
             }// node
 
