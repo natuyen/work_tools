@@ -3,7 +3,7 @@
 // variable
 NODE_LINUX = "tcb-garoon-test-base"
 WORK_DIR_NODE_LINUX = ""
-NODE_DEVMGR_1 = "devmgr-1"
+NODE_DEVMGR_1 = "devmgr-3"
 WORK_DIR_NODE_DEVMGR_1 = ""
 
 def GAROON_CURRENT_VERSION
