@@ -7,8 +7,8 @@ NODE_DEVMGR_1 = "devmgr-3"
 WORK_DIR_NODE_DEVMGR_1 = ""
 
 PARTTERN_FOREST_ARCHIVE="garoon-GRF*.tgz"
-PARTTERN_GAROON_SP_ARCHIVE=
-PARTTERN_MIGRATION_ARCHIVE=
+PARTTERN_GAROON_SP_ARCHIVE=""
+PARTTERN_MIGRATION_ARCHIVE=""
 
 def SERVICE_SET = "${SERVICE_SET}"
 def FOREST_BRANCH = "${FOREST_BRANCH}"
@@ -23,7 +23,7 @@ currentBuild.description += "<li>FOREST_BRANCH: ${FOREST_BRANCH}"
 currentBuild.description += "<li>ONPRE_VERSION: ${ONPRE_VERSION}"
 
 def GAROON_CURRENT_VERSION
-def ARCHIVE_FOLDER = "LEO_${env.BUILD_ID}"
+def ARCHIVE_FOLDER = "${env.BUILD_ID}"
 def ARCHIVE_FOLDER_VERSION // contains archive forest version
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 
@@ -116,28 +116,25 @@ try {
     // cleanup
     timeout(time: 30, unit: "MINUTES") {
         stage("cleanup") {
-            if(!IS_UPGRADE_ARCHIVE){
-                return;
-            }
-            node(NODE_LINUX) {
-                sh "rm -rf ${WORK_DIR_NODE_LINUX}"
-            }
-
-            node(NODE_DEVMGR_1) {
-                sh "rm -rf ${env.WORKSPACE}/LEO_*"
-
-            }// node
-
-            // def builders = [:]
-
-            // [NODE_LINUX, NODE_DEVMGR_1].each {
-            //     builders[it] = {
-            //         node(it) {
-            //             sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
-            //         }
-            //     }
+            // node(NODE_LINUX) {
+            //     sh "rm -rf ${WORK_DIR_NODE_LINUX}"
             // }
-            // parallel builders
+
+            // node(NODE_DEVMGR_1) {
+            //     sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}*"
+
+            // }// node
+
+            def builders = [:]
+
+            [NODE_LINUX, NODE_DEVMGR_1].each {
+                builders[it] = {
+                    node(it) {
+                        sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+                    }
+                }
+            }
+            parallel builders
         }// stage
     }
 }
