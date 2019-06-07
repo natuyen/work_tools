@@ -7,7 +7,7 @@ NODE_DEVMGR = "devmgr-3"
 WORK_DIR_NODE_DEVMGR = ""
 
 NODE_TEST_FOREST_MIGRATION = "grn-test-forest-migration"
-WORK_DIR_NODE_TEST_FOREST_ENABLE_MIGRATION = "/home/GTM-6188/hazama/converter/migration"
+WORK_DIR_NODE_TEST_FOREST_MIGRATION_ENABLE = "/home/GTM-6188/hazama/converter/migration"
 
 PARTTERN_FOREST_ARCHIVE="garoon-GRF*.tgz"
 PARTTERN_GAROON_SP_ARCHIVE=""
@@ -35,6 +35,7 @@ echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 def download_archive(product, branch, pattern){
     node(NODE_LINUX) {
         dir(WORK_DIR_NODE_LINUX){
+            echo "Downloading archive..."
             def MOUNT_FOLDER = 'rc'
             sh "mkdir -p ${MOUNT_FOLDER}"
             def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
@@ -53,6 +54,7 @@ def download_archive(product, branch, pattern){
             INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
             echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
             stash name: "garoon archive", includes: INSTALL_ARCHIVE_NAME
+            echo "Download done."
 
             return INSTALL_ARCHIVE_NAME
         }
@@ -85,11 +87,10 @@ try {
                 }// node
             }
 
-            stage('Destroy and Deploy Forest site') {
+            stage('Destroy/Deploy Forest site') {
                 node(NODE_DEVMGR) {
                     dir(WORK_DIR_NODE_DEVMGR){
                         echo "Recreate Forest site..."
-                        echo "Downloading archive..."
                         def archive_name = download_archive('garoon4', FOREST_BRANCH, PARTTERN_FOREST_ARCHIVE)
                         echo "archive_name:${archive_name}"
 
@@ -112,9 +113,9 @@ try {
                 
             }
 
-            stage("Setup Forest site for uploader") {
+            stage("Setup Forest site for Uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
-                    dir(WORK_DIR_NODE_TEST_FOREST_ENABLE_MIGRATION){
+                    dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_ENABLE){
                         sh "docker-compose run --rm wdio ${FOREST_URL}"
                     }
                 }//node
