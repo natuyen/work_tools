@@ -102,9 +102,9 @@ try {
                         }
 
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                            sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                            //sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
                             sh "domaindb ss version ${SERVICE_SET} ${FOREST_VERSION}"
-                            sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
+                            //sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                         }
                         echo "Recreate Forest site done."
                     }
@@ -115,7 +115,7 @@ try {
             stage("Setup Forest site for uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_ENABLE_MIGRATION){
-                        SH "docker-compose run --rm wdio ${FOREST_URL}"
+                        sh "docker-compose run --rm wdio ${FOREST_URL}"
                     }
                 }//node
             }// stage
