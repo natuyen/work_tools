@@ -3,8 +3,8 @@
 // variable
 NODE_LINUX = "tcb-garoon-test-base"
 WORK_DIR_NODE_LINUX = ""
-NODE_DEVMGR_1 = "devmgr-3"
-WORK_DIR_NODE_DEVMGR_1 = ""
+NODE_DEVMGR = "devmgr-3"
+WORK_DIR_NODE_DEVMGR = ""
 
 PARTTERN_FOREST_ARCHIVE="garoon-GRF*.tgz"
 PARTTERN_GAROON_SP_ARCHIVE=""
@@ -22,7 +22,7 @@ currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>FOREST_BRANCH: ${FOREST_BRANCH}"
 currentBuild.description += "<li>ONPRE_VERSION: ${ONPRE_VERSION}"
 
-def GAROON_CURRENT_VERSION
+def FOREST_VERSION
 def ARCHIVE_FOLDER = "${env.BUILD_ID}"
 def ARCHIVE_FOLDER_VERSION // contains archive forest version
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
@@ -30,7 +30,8 @@ echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 def download_archive(product, branch, pattern){
     node(NODE_LINUX) {
         dir(WORK_DIR_NODE_LINUX){
-            sh "mkdir -p rc"
+            def MOUNT_FOLDER = 'rc'
+            sh "mkdir -p ${MOUNT_FOLDER}"
             def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
                                 if ! mountpoint -q "garoon"; then
                                     mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/${product} rc/ -o guest
@@ -42,7 +43,7 @@ def download_archive(product, branch, pattern){
             
             echo "archiveFilePath: ${archiveFilePath}"
             sh "cp -rf ${archiveFilePath} ."
-            sh "umount rc"
+            sh "umount ${MOUNT_FOLDER}"
             
             INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
             echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
@@ -74,29 +75,30 @@ try {
                 }// node
 
                 // node upgrade archive
-                node(NODE_DEVMGR_1) {
-                    WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+                node(NODE_DEVMGR) {
+                    WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${ARCHIVE_FOLDER}"
                 }// node
             }
 
             stage('Destroy and Deploy Forest site') {
-                node(NODE_DEVMGR_1) {
-                    dir(WORK_DIR_NODE_DEVMGR_1){
+                node(NODE_DEVMGR) {
+                    dir(WORK_DIR_NODE_DEVMGR){
                         echo "Recreate Forest site..."
                         echo "Downloading archive..."
                         def archive_name = download_archive('garoon4', FOREST_BRANCH, PARTTERN_FOREST_ARCHIVE)
-                        GAROON_CURRENT_VERSION = getForestVersion(archive_name)
                         echo "archive_name:${archive_name}"
-                        echo "GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
-                        sh "cp -prf /home/qa/${GAROON_CURRENT_VERSION} ."
-                        ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR_1}/${GAROON_CURRENT_VERSION}"
+
+                        FOREST_VERSION = getForestVersion(archive_name)
+                        echo "FOREST_VERSION:${FOREST_VERSION}"
+                        sh "cp -prf /home/qa/${FOREST_VERSION} ."
+                        ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR}/${FOREST_VERSION}"
                         dir(ARCHIVE_FOLDER_VERSION){
                             replace_archive()
                         }
 
                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                            sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
+                            sh "domaindb ss version ${SERVICE_SET} ${FOREST_VERSION}"
                             sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                         }
                         echo "Recreate Forest site done."
@@ -120,17 +122,17 @@ try {
             //     sh "rm -rf ${WORK_DIR_NODE_LINUX}"
             // }
 
-            // node(NODE_DEVMGR_1) {
+            // node(NODE_DEVMGR) {
             //     sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}*"
 
             // }// node
 
             def builders = [:]
 
-            [NODE_LINUX, NODE_DEVMGR_1].each {
+            [NODE_LINUX, NODE_DEVMGR].each {
                 builders[it] = {
                     node(it) {
-                        sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}"
+                        sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}*"
                     }
                 }
             }
