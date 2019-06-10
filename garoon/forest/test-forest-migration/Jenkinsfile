@@ -123,11 +123,11 @@ try {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
                         echo "FOREST_VERSION:${FOREST_VERSION}"
-                        sh(returnStdout: true, script:'''#!/bin/bash
+                        sh(returnStdout: true, script:"""#!/bin/bash -xel
                             cd converter \
                             echo "rm -rf data/garoon/${FOREST_VERSION}/scripts" > test.txt \
                             echo "bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev" >> test.txt \
-                        ''')
+                        """)
                     }
                 }//node
             }// stage
