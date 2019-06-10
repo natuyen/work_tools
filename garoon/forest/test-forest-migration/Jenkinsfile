@@ -25,7 +25,7 @@ echo "FOREST_BRANCH: ${FOREST_BRANCH}"
 currentBuild.description =  "<li>SERVICE_SET: ${SERVICE_SET}"
 currentBuild.description += "<li>FOREST_BRANCH: ${FOREST_BRANCH}"
 
-FOREST_VERSION =""
+FOREST_VERSION = ""
 def ARCHIVE_FOLDER = "${env.BUILD_ID}"
 def ARCHIVE_FOLDER_VERSION // contains archive forest version
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
@@ -122,12 +122,12 @@ try {
             stage("Test uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
+                        echo "FOREST_VERSION:${FOREST_VERSION}"
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
-                            echo "FOREST_VERSION:${FOREST_VERSION}"
                             rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
-                            expect "\\( y / n \\)"
+                            expect "( y / n )"
                             send "y\n"
                         '''.stripIndent())
                     }
