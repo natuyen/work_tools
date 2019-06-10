@@ -126,7 +126,7 @@ try {
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
-                            bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
+                            bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
                         '''.stripIndent())
                     }
                 }//node
