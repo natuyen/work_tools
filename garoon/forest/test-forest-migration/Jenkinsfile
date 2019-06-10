@@ -17,6 +17,7 @@ PARTTERN_MIGRATION_ARCHIVE=""
 def SERVICE_SET = "${SERVICE_SET}"
 def FOREST_URL = "${FOREST_URL}"
 def FOREST_BRANCH = "${FOREST_BRANCH}"
+def RECREATE_SERVICE_SET = Boolean.valueOf("${RECREATE_SERVICE_SET}");
 
 echo "SERVICE_SET: ${SERVICE_SET}"
 echo "FOREST_URL: ${FOREST_URL}"
@@ -94,18 +95,20 @@ try {
 
                         FOREST_VERSION = getForestVersion(archive_name)
                         echo "FOREST_VERSION:${FOREST_VERSION}"
-                        sh "cp -prf /home/qa/${FOREST_VERSION} ."
-                        ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR}/${FOREST_VERSION}"
-                        dir(ARCHIVE_FOLDER_VERSION){
-                            replace_archive()
-                        }
 
-                        withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                            //sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
-                            sh "domaindb ss version ${SERVICE_SET} ${FOREST_VERSION}"
-                            //sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
+                        if(RECREATE_SERVICE_SET){
+                            sh "cp -prf /home/qa/${FOREST_VERSION} ."
+                            ARCHIVE_FOLDER_VERSION = "${WORK_DIR_NODE_DEVMGR}/${FOREST_VERSION}"
+                            dir(ARCHIVE_FOLDER_VERSION){
+                                replace_archive()
+                            }
+                            withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                                sh "/usr/local/umber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                                sh "domaindb ss version ${SERVICE_SET} ${FOREST_VERSION}"
+                                sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
+                            }
+                            echo "Recreate Forest site done."
                         }
-                        echo "Recreate Forest site done."
                     }
                 }
                 
@@ -114,7 +117,7 @@ try {
             stage("Setup Forest site for Uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_ENABLE){
-                        //sh "docker-compose run --rm wdio ${FOREST_URL}"
+                        sh "docker-compose run --rm wdio ${FOREST_URL}"
                     }
                 }//node
             }// stage
