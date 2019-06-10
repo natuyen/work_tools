@@ -126,7 +126,7 @@ try {
                         sh "rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts"
                         sh '''
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
-                            expect "( y / n )"
+                            expect "\( y / n \)"
                             send "y\n"
                         '''
                     }
