@@ -114,7 +114,7 @@ try {
             stage("Setup Forest site for Uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_ENABLE){
-                        sh "docker-compose run --rm wdio ${FOREST_URL}"
+                        //sh "docker-compose run --rm wdio ${FOREST_URL}"
                     }
                 }//node
             }// stage
@@ -122,9 +122,9 @@ try {
             stage("Test uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
-                        sh "cd converter"
-                        sh "rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts"
-                        sh '''
+                        sh '''#!/bin/bash
+                            cd converter
+                            rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
                             expect "\\( y / n \\)"
                             send "y\n"
