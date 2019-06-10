@@ -125,10 +125,8 @@ try {
                         echo "FOREST_VERSION:${FOREST_VERSION}"
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
-                            rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts
+                            rm -rf data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
-                            //expect "( y / n )"
-                            //send "y\n"
                         '''.stripIndent())
                     }
                 }//node
