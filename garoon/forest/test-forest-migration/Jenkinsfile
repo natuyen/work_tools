@@ -123,6 +123,7 @@ try {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
                         echo "FOREST_VERSION:${FOREST_VERSION}"
+                        FOREST_VERSION="${FOREST_VERSION}"
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
                             echo "rm -rf data/garoon/${FOREST_VERSION}/scripts" > test.txt
@@ -139,15 +140,6 @@ try {
     // cleanup
     timeout(time: 30, unit: "MINUTES") {
         stage("cleanup") {
-            // node(NODE_LINUX) {
-            //     sh "rm -rf ${WORK_DIR_NODE_LINUX}"
-            // }
-
-            // node(NODE_DEVMGR) {
-            //     sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}*"
-
-            // }// node
-
             def builders = [:]
 
             [NODE_LINUX, NODE_DEVMGR].each {
