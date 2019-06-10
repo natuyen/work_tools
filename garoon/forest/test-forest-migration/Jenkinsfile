@@ -38,7 +38,7 @@ def download_archive(product, branch, pattern){
             sh "mkdir -p ${MOUNT_FOLDER}"
             def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
                                 if ! mountpoint -q "garoon"; then
-                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/${product} rc/ -o guest
+                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC rc/ -o guest
                                 fi
                             '''.stripIndent())
 
@@ -123,7 +123,7 @@ try {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
                         echo "FOREST_VERSION:${FOREST_VERSION}"
-                        FOREST_VERSION="${FOREST_VERSION}"
+                        export FOREST_VERSION="${FOREST_VERSION}"
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
                             echo "rm -rf data/garoon/${FOREST_VERSION}/scripts" > test.txt
