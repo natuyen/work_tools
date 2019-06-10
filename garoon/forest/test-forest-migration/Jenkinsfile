@@ -127,6 +127,8 @@ try {
                             cd converter
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
+                            expect "( y / n )"
+                            send "y\n"
                         """)
                     }
                 }//node
