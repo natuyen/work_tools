@@ -127,6 +127,20 @@ try {
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
                         echo "FOREST_VERSION:${FOREST_VERSION}"
                         sh(returnStdout: true, script:"""#!/bin/bash
+                            # remove old garoon
+                            if [ -e /var/www/cgi-bin/cbgrn/uninstall_cbgrn ]; then
+                              sh /var/www/cgi-bin/cbgrn/uninstall_cbgrn complete
+                            fi
+                            if [ -e /usr/local/cybozu/mysql-5.0/uninstall_cyde_5_0 ]; then
+                              sh /usr/local/cybozu/mysql-5.0/uninstall_cyde_5_0 complete
+                            fi
+                            rm -rf /var/www/cgi-bin/cbgrn
+                            rm -rf /var/www/html/cbgrn
+                            rm -rf /usr/local/cybozu
+                            rm -f /etc/init.d/cyde_5_0
+                            rm -f /etc/init.d/cyss_cbgrn
+
+                            # migrate
                             cd converter
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
