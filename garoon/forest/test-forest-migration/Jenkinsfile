@@ -122,13 +122,13 @@ try {
             stage("Test uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
-                        sh '''#!/bin/bash
+                        sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
                             rm -rf /home/GTM-6188/uploader-test/converter/data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
                             expect "\\( y / n \\)"
                             send "y\n"
-                        '''
+                        '''.stripIndent())
                     }
                 }//node
             }// stage
