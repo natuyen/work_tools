@@ -125,8 +125,8 @@ try {
                         echo "FOREST_VERSION:${FOREST_VERSION}"
                         sh(returnStdout: true, script:'''#!/bin/bash
                             cd converter
-                            echo "rm -rf data/garoon/${FOREST_VERSION}/scripts"
-                            echo "bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev"
+                            echo "rm -rf data/garoon/${FOREST_VERSION}/scripts" > test.txt
+                            echo "bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev" >> test.txt
                         '''.stripIndent())
                     }
                 }//node
