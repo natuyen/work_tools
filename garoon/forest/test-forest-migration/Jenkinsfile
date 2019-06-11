@@ -147,6 +147,9 @@ try {
                             export TERM=linux
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
                         """)
+                        
+                        echo "**************************************************************************"
+                        echo "*****************************MIGRATE LOGS*****************************************"
                         sh "cat converter/log/garoon_*.log"
                     }
                 }//node
