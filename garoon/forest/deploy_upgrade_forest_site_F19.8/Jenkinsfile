@@ -8,10 +8,11 @@ WORK_DIR_NODE_DEVMGR_1 = ""
 
 def GAROON_CURRENT_VERSION
 def GAROON_CURRENT_BRANCH = "${GAROON_CURRENT_BRANCH}"
+def GAROON_CURRENT_BUILD_NUMBER = "${GAROON_CURRENT_BUILD_NUMBER}"
 def DESTROY_AND_DEPLOY = Boolean.valueOf("${DESTROY_AND_DEPLOY}");
 
 def GAROON_NEW_BRANCH = "${GAROON_NEW_BRANCH}"
-def GAROON_BUILD_NUMBER = "${GAROON_BUILD_NUMBER}"
+def GAROON_NEW_BUILD_NUMBER = "${GAROON_NEW_BUILD_NUMBER}"
 def GAROON_NEW_VERSION
 
 def ARCHIVE_FOLDER = "LEO_${env.BUILD_ID}"
@@ -23,10 +24,11 @@ currentBuild.description += "<li>TARGET: ${GAROON_NEW_BRANCH}"
 
 echo "SERVICE_SET: ${SERVICE_SET}"
 echo "GAROON_CURRENT_BRANCH: ${GAROON_CURRENT_BRANCH}"
+echo "GAROON_CURRENT_BUILD_NUMBER: ${GAROON_CURRENT_BUILD_NUMBER}"
 echo "DESTROY_AND_DEPLOY: ${DESTROY_AND_DEPLOY}"
 
 echo "GAROON_NEW_BRANCH: ${GAROON_NEW_BRANCH}"
-echo "GAROON_BUILD_NUMBER: ${GAROON_BUILD_NUMBER}"
+echo "GAROON_NEW_BUILD_NUMBER: ${GAROON_NEW_BUILD_NUMBER}"
 
 echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"\
 
@@ -107,7 +109,7 @@ try {
                         if(DESTROY_AND_DEPLOY){
                             echo "Recreate Forest site..."
                             echo "Downloading archive..."
-                            def archive_name = download_archive(GAROON_CURRENT_BRANCH, '', 'garoon-GRF*.tgz')
+                            def archive_name = download_archive(GAROON_CURRENT_BRANCH, GAROON_CURRENT_BUILD_NUMBER, 'garoon-GRF*.tgz')
                             GAROON_CURRENT_VERSION = getForestVersion(archive_name)
                             echo "archive_name:${archive_name}"
                             echo "GAROON_CURRENT_VERSION:${GAROON_CURRENT_VERSION}"
@@ -136,7 +138,7 @@ try {
                 node(NODE_DEVMGR_1) {
                     dir(WORK_DIR_NODE_DEVMGR_1){
                         echo "Downloading archive..."
-                        def archive_name = download_archive(GAROON_NEW_BRANCH, GAROON_BUILD_NUMBER, 'garoon-GRF*.tgz')
+                        def archive_name = download_archive(GAROON_NEW_BRANCH, GAROON_NEW_BUILD_NUMBER, 'garoon-GRF*.tgz')
                         GAROON_NEW_VERSION = getForestVersion(archive_name)
                         echo "archive_name:${archive_name}"
                         echo "GAROON_NEW_VERSION:${GAROON_NEW_VERSION}"
