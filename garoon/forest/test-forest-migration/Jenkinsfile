@@ -103,7 +103,7 @@ try {
                                 replace_archive()
                             }
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                                sh "/usr/local/umber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
+                                sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICE_SET}"
                                 sh "domaindb ss version ${SERVICE_SET} ${FOREST_VERSION}"
                                 sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                             }
@@ -142,6 +142,7 @@ try {
 
                             # migrate
                             cd converter
+                            rm -rf log/*
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
                         """)
