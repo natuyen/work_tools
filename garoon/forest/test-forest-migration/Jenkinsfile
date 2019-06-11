@@ -144,6 +144,7 @@ try {
                             cd converter
                             rm -rf log/*
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
+                            export TERM=linux
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
                         """)
                     }
