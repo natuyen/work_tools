@@ -153,13 +153,13 @@ try {
                         sh "cat converter/log/garoon_*.log"
 
                         // check result
-                        sh(returnStdout: true, script:"""#!/bin/bash -x
-                            result=`grep "Processing complete." garoon_*.log`
-                            echo $result
-                            if [ "$result" = "" ]; then
-                                error "Migrate failed."
-                            fi
-                        """)
+                        // sh(returnStdout: true, script:"""#!/bin/bash -x
+                        //     result=`grep "Processing complete." garoon_*.log`
+                        //     echo $result
+                        //     if [ -z "$result" ]; then
+                        //         error "Migration failed."
+                        //     fi
+                        // """)
                     }
                 }//node
             }// stage
