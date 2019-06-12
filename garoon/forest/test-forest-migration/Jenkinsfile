@@ -70,6 +70,10 @@ def getForestVersion(archive_name){
     return archive_name.substring(archive_name.indexOf("GRF")+3, archive_name.indexOf("_"))
 }
 
+def sendFailureNotification() {
+    build job: "post-jenkins-status-to-kintone", wait: false
+}
+
 // main process
 try {
     timestamps {
@@ -184,6 +188,3 @@ try {
     }
 }
 
-def sendFailureNotification() {
-    build job: "post-jenkins-status-to-kintone", wait: false
-}
