@@ -160,7 +160,8 @@ try {
                         def result = sh(returnStdout: true, script: "grep 'Processing complete.' converter/log/garoon_*.log | cat")
                         echo "Migration result:${result}"
                         if ( result == ""){
-                            exit(1)
+                            currentBuild.result = "FAILURE"
+                            throw new Exception("Migration failed.")
                         }
                     }
                 }//node
