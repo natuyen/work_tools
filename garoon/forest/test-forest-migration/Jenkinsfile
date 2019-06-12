@@ -161,7 +161,7 @@ try {
                         echo "Migration result:${result}"
                         if ( result == ""){
                             currentBuild.result = "FAILURE"
-                            throw new Exception("Migration failed.")
+                            error("Migration failed.")
                         }
                     }
                 }//node
