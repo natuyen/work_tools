@@ -153,18 +153,18 @@ try {
                         sh "cat converter/log/garoon_*.log"
 
                         // check result
-                        //def result = sh(returnStdout: true, script: "grep 'Processing complete.' converter/log/garoon_*.log")
-                        //echo "Migration result:${result}"
-                        // if ( result == ""){
-                        //     error("Migration failed.")
-                        // }
-                        sh(returnStdout: true, script:"""#!/bin/bash -x
-                            def result=`grep "Processing complete." garoon_*.log`
-                            echo $result
-                            if [ -z "$result" ]; then
-                                error "Migration failed."
-                            fi
-                        """)
+                        def result = sh(returnStdout: true, script: "grep 'Processing complete.' converter/log/garoon_*.log | cat")
+                        echo "Migration result:${result}"
+                        if ( result == ""){
+                            error("Migration failed.")
+                        }
+                        // sh(returnStdout: true, script:"""#!/bin/bash -x
+                        //     def result=`grep "Processing complete." garoon_*.log`
+                        //     echo $result
+                        //     if [ -z "$result" ]; then
+                        //         error "Migration failed."
+                        //     fi
+                        // """)
                     }
                 }//node
             }// stage
