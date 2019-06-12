@@ -154,7 +154,7 @@ try {
 
                         // check result
                         //def result = sh(returnStdout: true, script: "grep 'Processing complete.' converter/log/garoon_*.log")
-                        /echo "Migration result:${result}"
+                        //echo "Migration result:${result}"
                         // if ( result == ""){
                         //     error("Migration failed.")
                         // }
