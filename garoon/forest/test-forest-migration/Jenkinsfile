@@ -142,10 +142,10 @@ try {
 
                             # migrate
                             cd converter
-                            rm -rf log/*
+                            #rm -rf log/*
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
                             export TERM=linux
-                            bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
+                            #bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom grn-test-forest-migration -dev
                         """)
                         
                         echo "**************************************************************************"
@@ -155,9 +155,9 @@ try {
                         // check result
                         def result = sh(returnStdout: true, script: "grep 'Processing complete.' converter/log/garoon_*.log").trim()
                         echo "Migration result:${result}"
-                        if ( result == ""){
-                            error("Migration failed.")
-                        }
+                        // if ( result == ""){
+                        //     error("Migration failed.")
+                        // }
                         // sh(returnStdout: true, script:"""#!/bin/bash -x
                         //     result=`grep "Processing complete." garoon_*.log`
                         //     echo $result
