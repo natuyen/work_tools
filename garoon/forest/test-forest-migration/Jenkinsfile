@@ -168,7 +168,7 @@ try {
         }// timeout
     }// timestamps
 } catch (error) {
-    sendFailureNotification
+    sendFailureNotification()
     throw error
 } finally {
     // cleanup
