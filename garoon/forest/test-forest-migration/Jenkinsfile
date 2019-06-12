@@ -161,7 +161,7 @@ try {
                         echo "Migration result:${result}"
                         if ( result == ""){
                             currentBuild.result = "FAILURE"
-                            error("Migration failed.")
+                            sh "exit 1"
                         }
                     }
                 }//node
