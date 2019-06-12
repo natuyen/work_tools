@@ -155,6 +155,7 @@ try {
                         sh "cydecc ss update --force-maintenance -a Garoon ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
                         sh "domaindb ss version ${SERVICE_SET} ${GAROON_NEW_VERSION}"
                         echo "Update archive / upgrade version done."
+                        sh "landsat cat -t garoon.upgrade_log -u ${SERVICE_SET} -d today"
                     }
                 }// node
             }// stage
