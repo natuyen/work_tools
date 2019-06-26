@@ -130,6 +130,7 @@ try {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_UPLOADER){
                         echo "FOREST_VERSION:${FOREST_VERSION}"
+                        sh "ls -ltr convert/data/garoon/${FOREST_VERSION}"
                         sh(returnStdout: true, script:"""#!/bin/bash -x
                             # remove old garoon
                             if [ -e /var/www/cgi-bin/cbgrn/uninstall_cbgrn ]; then
@@ -149,7 +150,6 @@ try {
                             rm -rf log/*
                             rm -rf data/garoon/${FOREST_VERSION}/scripts
                             export TERM=linux
-                            ls -ltr data/garoon/${FOREST_VERSION}
                             bash migrate-test.sh -app garoon -version ${FOREST_VERSION} -dom ${SERVICE_SET} -dev
                         """)
                         
