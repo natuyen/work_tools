@@ -121,6 +121,8 @@ try {
             stage("Setup Forest site for Uploader") {
                 node(NODE_TEST_FOREST_MIGRATION){
                     dir(WORK_DIR_NODE_TEST_FOREST_MIGRATION_ENABLE){
+                        sh "git fetch"
+                        sh "git pull"
                         sh "docker-compose run --rm wdio ${FOREST_URL}"
                     }
                 }//node
