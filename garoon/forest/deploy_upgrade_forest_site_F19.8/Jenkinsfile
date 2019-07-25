@@ -44,7 +44,7 @@ def download_archive(branch, buildNumber, pattern){
             sh "mkdir -p garoon"
             def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
                                 if ! mountpoint -q "garoon"; then
-                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon/ -o guest
+                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon garoon/ -o guest
                                 fi
                             '''.stripIndent())
 
