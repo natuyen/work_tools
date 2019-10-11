@@ -44,7 +44,7 @@ def download_archive(product, branch, pattern){
                             '''.stripIndent())
 
             def archiveFilePath
-            archiveFilePath = sh(returnStdout: true, script: "find rc/${product}/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+            archiveFilePath = sh(returnStdout: true, script: "find rc/${product}/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
             
             echo "archiveFilePath: ${archiveFilePath}"
             sh "cp -rf ${archiveFilePath} ."
@@ -94,7 +94,7 @@ try {
                 node(NODE_DEVMGR) {
                     dir(WORK_DIR_NODE_DEVMGR){
                         echo "Recreate Forest site..."
-                        def archive_name = download_archive('garoon4', FOREST_BRANCH, PARTTERN_FOREST_ARCHIVE)
+                        def archive_name = download_archive('garoon', FOREST_BRANCH, PARTTERN_FOREST_ARCHIVE)
                         echo "archive_name:${archive_name}"
 
                         FOREST_VERSION = getForestVersion(archive_name)
