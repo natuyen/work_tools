@@ -3,7 +3,7 @@
 // variable
 NODE_LINUX = "tcb-garoon-test-base"
 WORK_DIR_NODE_LINUX = ""
-NODE_DEVMGR = "devmgr-3"
+NODE_DEVMGR = "devmgr"
 WORK_DIR_NODE_DEVMGR = ""
 
 NODE_TEST_FOREST_MIGRATION = "grn-test-forest-migration"
