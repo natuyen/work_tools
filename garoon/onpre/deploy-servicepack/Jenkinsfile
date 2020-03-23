@@ -65,10 +65,10 @@ try {
                     ])
 
                     // copy builds config
-                    sh "if [ -f 'garoon/build/build.conf' ]; then
-                            cp -rf garoon/build/build.conf auto-deploy
-                        fi
-                    "
+                    //sh "if [ -f 'garoon/build/build.conf' ]; then
+                    //        cp -rf garoon/build/build.conf auto-deploy
+                    //    fi
+                    //"
                     //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
                     //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
 
