@@ -23,6 +23,25 @@ try {
                 // Because parallel execution fails if we don't do it at each time
                 WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    // checkout deploy tool
+                    checkout([
+                            $class                           : "GitSCM",
+                            branches                         : [[name: "origin/deploy-onpre-servicepack"]],
+                            doGenerateSubmoduleConfigurations: false,
+                            //clearWorkspace                   : true,
+                            extensions                       : [
+                                    //[$class: "GitLFSPull"],
+                                    [$class: "CleanBeforeCheckout"],
+                                    [$class: 'RelativeTargetDirectory', relativeTargetDir: 'auto-deploy'],
+                            ],
+                            submoduleCfg                     : [],
+                            userRemoteConfigs                : [
+                                    [
+                                        credentialsId: GAROON_JENKIN_CREDENTIAL_ID,
+                                        url: WORKER_TOOL_REPOSITORY_URL
+                                    ]
+                            ]
+                        ])
                     echo "GIT_BRANCH: ${GIT_BRANCH}"
                     checkout([
                         $class                           : "GitSCM",
@@ -30,7 +49,7 @@ try {
                         doGenerateSubmoduleConfigurations: false,
                         //clearWorkspace                   : true,
                         extensions                       : [
-                                [$class: "GitLFSPull"],
+                                //[$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
