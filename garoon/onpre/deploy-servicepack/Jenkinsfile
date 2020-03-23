@@ -17,38 +17,47 @@ def GIT_BRANCH = "${BRANCH}"
 // process
 try {
     timeout(time: 120, unit: 'MINUTES') {
-        stage("Compress deploy script") {
-            node {
-                stash name: 'deploy-script', includes: '*'
-            }
-        }
-
         stage("Checkout") {
             node(NODE_DOCKER_LINUX) {
                 // Specify working directory
                 // Because parallel execution fails if we don't do it at each time
                 WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
-                    sh 'mkdir autoinstall'
-                    dir('autoinstall') {
-                        unstash name: 'deploy-script'
-                    }
                     checkout([
-                            $class                           : "GitSCM",
-                            branches                         : [[name: "origin/${GIT_BRANCH}"]],
-                            doGenerateSubmoduleConfigurations: false,
-                            clearWorkspace                   : true,
-                            extensions                       : [
-                                    //[$class: "GitLFSPull"],
-                                    [$class: "CleanBeforeCheckout"]
-                            ],
-                            submoduleCfg                     : [],
-                            userRemoteConfigs                : [
-                                    [
-                                        credentialsId: GAROON_JENKIN_CREDENTIAL_ID,
-                                        url: GAROON_REPOSITORY_URL
-                                    ]
-                            ]
+                        $class                           : "GitSCM",
+                        branches                         : [[name: "origin/${deploy-onpre-servicepack}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        clearWorkspace                   : true,
+                        extensions                       : [
+                                [$class: "CleanBeforeCheckout"]
+                                [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'auto-deploy']],
+                        ],
+                        submoduleCfg                     : [],
+                        userRemoteConfigs                : [
+                                [
+                                    credentialsId: GAROON_JENKIN_CREDENTIAL_ID,
+                                    url: WORKER_TOOL_REPOSITORY_URL
+                                ]
+                        ]
+                    ])
+
+                    checkout([
+                        $class                           : "GitSCM",
+                        branches                         : [[name: "origin/${GIT_BRANCH}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        clearWorkspace                   : true,
+                        extensions                       : [
+                                //[$class: "GitLFSPull"],
+                                [$class: "CleanBeforeCheckout"]
+                                [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon']],
+                        ],
+                        submoduleCfg                     : [],
+                        userRemoteConfigs                : [
+                                [
+                                    credentialsId: GAROON_JENKIN_CREDENTIAL_ID,
+                                    url: GAROON_REPOSITORY_URL
+                                ]
+                        ]
                     ])
                     //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
                     //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
