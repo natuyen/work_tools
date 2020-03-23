@@ -31,7 +31,7 @@ try {
                         //clearWorkspace                   : true,
                         extensions                       : [
                                 [$class: "GitLFSPull"],
-                                [$class: "CleanBeforeCheckout"]
+                                [$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
                         submoduleCfg                     : [],
