@@ -42,14 +42,16 @@ try {
                                     ]
                             ]
                         ])
+
+                    // check out Garoon branch
                     echo "GIT_BRANCH: ${GIT_BRANCH}"
                     checkout([
                         $class                           : "GitSCM",
                         branches                         : [[name: "origin/${GIT_BRANCH}"]],
                         doGenerateSubmoduleConfigurations: false,
-                        //clearWorkspace                   : true,
+                        clearWorkspace                   : true,
                         extensions                       : [
-                                //[$class: "GitLFSPull"],
+                                [$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
@@ -61,6 +63,12 @@ try {
                                 ]
                         ]
                     ])
+
+                    // copy builds config
+                    sh "if [ -f 'garoon/build/build.conf' ]; then
+                            cp -rf garoon/build/build.conf auto-deploy
+                        fi
+                    "
                     //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
                     //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
 
