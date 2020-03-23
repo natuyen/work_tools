@@ -43,7 +43,7 @@ try {
                         ]
                     ])
 
-
+                    echo "GIT_BRANCH: ${GIT_BRANCH}"
                     checkout([
                         $class                           : "GitSCM",
                         branches                         : [[name: "origin/${GIT_BRANCH}"]],
