@@ -25,7 +25,7 @@ try {
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
                     checkout([
                         $class                           : "GitSCM",
-                        branches                         : [[name: "origin/${deploy-onpre-servicepack}"]],
+                        branches                         : [[name: "origin/deploy-onpre-servicepack"]],
                         doGenerateSubmoduleConfigurations: false,
                         clearWorkspace                   : true,
                         extensions                       : [
