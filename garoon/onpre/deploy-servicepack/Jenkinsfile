@@ -32,7 +32,7 @@ try {
                         extensions                       : [
                                 [$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"]
-                                [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon']],
+                                [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
                         submoduleCfg                     : [],
                         userRemoteConfigs                : [
