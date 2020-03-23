@@ -22,15 +22,16 @@ try {
         }
         stage("Checkout") {
             node(NODE_DOCKER_LINUX) {
-                sh 'mkdir autoinstall'
-                dir('autoinstall') {
-                    unstash name: 'deploy-script'
-                }
+
 
                 // Specify working directory
                 // Because parallel execution fails if we don't do it at each time
                 WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    sh 'mkdir autoinstall'
+                    dir('autoinstall') {
+                        unstash name: 'deploy-script'
+                    }
                     checkout([
                             $class                           : "GitSCM",
                             branches                         : [[name: "origin/${GIT_BRANCH}"]],
