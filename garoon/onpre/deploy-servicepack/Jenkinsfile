@@ -4,6 +4,11 @@
 def NODE_DOCKER_LINUX = "grbuild14"
 def WORK_DIR_NODE_DOCKER_LINUX
 
+// Environment
+def WORKER_TOOL_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:tuyen-nguyen/work_tools.git"
+def GAROON_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:garoon/garoon.git"
+def GAROON_JENKIN_CREDENTIAL_ID = "jenkins-github-deploy-key"
+
 // Input Parameters
 def GIT_BRANCH = "${BRANCH}"
 //def IS_FORCE_BINARY_COMPILE = Boolean.valueOf("${IS_FORCE_BINARY_COMPILE}")
@@ -37,11 +42,11 @@ try {
                                     ]
                             ]
                     ])
-                    GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
-                    echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
+                    //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
+                    //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
 
-                    GIT_BUILD_REVISION = sh(returnStdout: true, script: "git log --oneline -n 1 ./build/binary | cut -c 1-7 | xargs git rev-parse").trim()
-                    echo "GIT_BUILD_REVISION: " + GIT_BUILD_REVISION
+                    //GIT_BUILD_REVISION = sh(returnStdout: true, script: "git log --oneline -n 1 ./build/binary | cut -c 1-7 | xargs git rev-parse").trim()
+                    //echo "GIT_BUILD_REVISION: " + GIT_BUILD_REVISION
                 }
             }
 
