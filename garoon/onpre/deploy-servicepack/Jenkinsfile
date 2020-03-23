@@ -66,6 +66,7 @@ try {
 
                     // copy builds config
                     sh '''
+                        pwd
                         if -f "garoon/build/build.conf"; then
                             echo "ton tai"
                             cp -rf garoon/build/build.conf auto-deploy
