@@ -17,9 +17,11 @@ def GIT_BRANCH = "${BRANCH}"
 // process
 try {
     timeout(time: 120, unit: 'MINUTES') {
-        //stage("Compress deploy script") {
-            stash name: 'deploy-script', includes: '*'
-        //}
+        stage("Compress deploy script") {
+            node {
+                stash name: 'deploy-script', includes: '*'
+            }
+        }
 
         stage("Checkout") {
             node(NODE_DOCKER_LINUX) {
