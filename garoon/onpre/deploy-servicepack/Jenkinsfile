@@ -27,7 +27,7 @@ try {
                         $class                           : "GitSCM",
                         branches                         : [[name: "origin/deploy-onpre-servicepack"]],
                         doGenerateSubmoduleConfigurations: false,
-                        clearWorkspace                   : true,
+                        //clearWorkspace                   : true,
                         extensions                       : [
                                 [$class: "CleanBeforeCheckout"]
                                 [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'auto-deploy']],
@@ -45,7 +45,7 @@ try {
                         $class                           : "GitSCM",
                         branches                         : [[name: "origin/${GIT_BRANCH}"]],
                         doGenerateSubmoduleConfigurations: false,
-                        clearWorkspace                   : true,
+                        //clearWorkspace                   : true,
                         extensions                       : [
                                 //[$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"]
