@@ -125,7 +125,7 @@ try {
                     }
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
-                        sh "bash -ex largescale/install-largescale.sh"
+                        sh "bash -ex largescale/install.sh"
                     }
                     
                     
