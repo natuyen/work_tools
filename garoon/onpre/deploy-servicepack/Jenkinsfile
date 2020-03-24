@@ -55,7 +55,7 @@ try {
                         doGenerateSubmoduleConfigurations: false,
                         clearWorkspace                   : true,
                         extensions                       : [
-                                //[$class: "GitLFSPull"],
+                                [$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
