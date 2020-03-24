@@ -19,6 +19,10 @@ try {
     timeout(time: 120, unit: 'MINUTES') {
         stage("Checkout") {
             node(NODE_DOCKER_LINUX) {
+                dir("${env.WORKSPACE}") {
+                    sh "rm -rf *"
+                }
+
                 // Specify working directory
                 // Because parallel execution fails if we don't do it at each time
                 WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
@@ -64,6 +68,15 @@ try {
                         ]
                     ])
 
+                    
+                    //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
+                    //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
+
+                    //GIT_BUILD_REVISION = sh(returnStdout: true, script: "git log --oneline -n 1 ./build/binary | cut -c 1-7 | xargs git rev-parse").trim()
+                    //echo "GIT_BUILD_REVISION: " + GIT_BUILD_REVISION
+                }
+
+                dir(WORK_DIR_NODE_DOCKER_LINUX) {
                     // copy builds config
                     sh '''
                         pwd
@@ -72,12 +85,8 @@ try {
                             cp -rf garoon/build/build.conf auto-deploy
                         fi
                     '''
-                    //GIT_BRANCH_REVISION = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
-                    //echo "GIT_BRANCH_REVISION: " + GIT_BRANCH_REVISION
-
-                    //GIT_BUILD_REVISION = sh(returnStdout: true, script: "git log --oneline -n 1 ./build/binary | cut -c 1-7 | xargs git rev-parse").trim()
-                    //echo "GIT_BUILD_REVISION: " + GIT_BUILD_REVISION
                 }
+
             }
 
             currentBuild.description = "<li>target: ${GIT_BRANCH}"
