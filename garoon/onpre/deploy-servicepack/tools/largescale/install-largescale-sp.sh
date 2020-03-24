@@ -10,7 +10,7 @@ cd archive
 tar xzvf $(basename ${ARCHIVE_NAME})
 cp -rf ../largescale/setting.ini installer_sp
 cd installer_sp
-sh install.sh ${SP_LARGESCALE_VERSION} setting.ini
+sh install.sh setting.ini
 
 # edit build date
 BUILD_DATE_DEBUG=${TODAY}-${SP_BRANCH}
