@@ -19,9 +19,9 @@ echo "GAROON_VERSION=$GAROON_VERSION"
 echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
 
 # install Garoon
-if [ ${UNINSTALL_OLD_GAROON} == true ]; then
+#if [ ${UNINSTALL_OLD_GAROON} == true ]; then
     bash -ex cloudpartner/install-cloudpartner.sh $GAROON_VERSION
-fi
+#fi
 
 # install sp
 if [ "$GAROON_SP_VERSION" != "" ]; then
