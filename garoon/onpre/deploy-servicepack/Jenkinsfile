@@ -80,7 +80,7 @@ try {
                     // copy builds config
                     sh '''
                         pwd
-                        if -f "garoon/build/build.conf"; then
+                        if -d "garoon/build"; then
                             echo "ton tai"
                             cp -rf garoon/build/build.conf auto-deploy
                         fi
