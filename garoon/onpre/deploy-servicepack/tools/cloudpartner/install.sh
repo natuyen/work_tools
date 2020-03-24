@@ -1,5 +1,4 @@
 #!/bin/bash -e
-. install_functions.sh
 echo "-----------------Start install Garoon Cloud Partner ..."
 export HOSTNAME=localhost
 GAROON_VERSION=""
