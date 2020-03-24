@@ -1,11 +1,12 @@
 #!/bin/bash
 source install.conf
+source build.conf
 echo "------Downloading ${ARCHIVE_PATH} ..."
 BRANCH=$1                    #4.10.x or 4.10.x/yyyymmdd-HHmm
 ARCHIVE_NAME_PARTERN=$2      #grn-*.bin
 
 ALIAS_DEV_RC_FOLDER=/home/file-dev-rc   #alias for //file.dev.cybozu.co.jp/Share/ARCHIVE/RC
-ALIAS_BRANCH_FOLDER=${ALIAS_DEV_RC_FOLDER}/${GAROON_FOLDER}/${BRANCH}
+ALIAS_BRANCH_FOLDER=${ALIAS_DEV_RC_FOLDER}/${PRODUCT_NAME}/${BRANCH}
 ARCHIVE_FOLDER=archive       #~/4.10.x/auto-install/archive
 
 mkdir -p ${ALIAS_DEV_RC_FOLDER}
