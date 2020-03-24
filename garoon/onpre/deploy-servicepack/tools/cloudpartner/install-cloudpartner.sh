@@ -12,7 +12,8 @@ if [ -f /etc/init.d/cyde_5_0_cbgrn_1 ]; then
     /etc/init.d/cyde_5_0_cbgrn_1 stop
 fi
 if [ -f /etc/init.d/cyssp_cbgrn_1 ]; then
-    /etc/init.d/cyssp_cbgrn_1 stop 2> /dev/null
+    /etc/init.d/cyssp_cbgrn_1 restart
+    /etc/init.d/cyssp_cbgrn_1 stop
 fi
 rm -rf /var/www/cgi-bin/cbgrn
 rm -rf /var/www/html/cbgrn
