@@ -5,6 +5,7 @@ def NODE_DOCKER_LINUX = "grbuild14"
 def WORK_DIR_NODE_DOCKER_LINUX
 
 def NODE_SINGLE_MACHINE = "leo-deploy-onpre-single"
+def WORK_DIR_NODE_SINGLE_MACHINE =
 
 
 // Environment
@@ -95,7 +96,11 @@ try {
         
         stage("Deploy") {
             node(NODE_SINGLE_MACHINE) {
-                echo "${env.WORKSPACE}"
+                WORK_DIR_NODE_SINGLE_MACHINE="LEO"
+                sh "rm -rf WORK_DIR_NODE_SINGLE_MACHINE"
+                dir(WORK_DIR_NODE_SINGLE_MACHINE) {
+                    
+                }
             }
         }
     }
