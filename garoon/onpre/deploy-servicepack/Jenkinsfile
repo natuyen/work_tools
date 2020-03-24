@@ -87,7 +87,7 @@ try {
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
                         sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
                     }
-                    stash name: "auto-deploy", includes: "auto-deploy"
+                    stash name: "auto-deploy", includes: "auto-deploy/*"
                 }
 
             }
