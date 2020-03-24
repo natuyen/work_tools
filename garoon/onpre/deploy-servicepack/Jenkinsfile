@@ -8,8 +8,8 @@ def NODE_SINGLE_MACHINE = "leo-deploy-onpre-single"
 def WORK_DIR_NODE_SINGLE_MACHINE
 
 
-def WORK_DIR_DEPLOY=auto-deploy/garoon/onpre/deploy-servicepack
-def WORK_DIR_DEPLOY_TOOLS=$WORK_DIR_DEPLOY/tools
+def WORK_DIR_DEPLOY = "auto-deploy/garoon/onpre/deploy-servicepack"
+def WORK_DIR_DEPLOY_TOOLS = "$WORK_DIR_DEPLOY/tools"
 
 // Environment
 def WORKER_TOOL_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:tuyen-nguyen/work_tools.git"
@@ -101,8 +101,8 @@ try {
         
         stage("Deploy") {
             node(NODE_SINGLE_MACHINE) {
-                WORK_DIR_NODE_SINGLE_MACHINE="${env.WORKSPACE}"
-                dir(WORK_DIR_NODE_SINGLE_MACHINE) {
+                WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
+                dir(WORK_DIR_NODE_MACHINE) {
                     sh "rm -rf *"
                     unstash name: "auto-deploy"
                 }
