@@ -8,8 +8,12 @@ bash -ex download_archive.sh ${GAROON_VERSION} ${GAROON_CLOUDPARTNER_PARTTERN}
 
 # uninstall old Garoon
 echo "--Start Uninstall old Garoon ..."
-/etc/init.d/cyde_5_0_cbgrn_1 stop
-/etc/init.d/cyssp_cbgrn_1 stop
+if [ -f /etc/init.d/cyde_5_0_cbgrn_1 ]; then
+    /etc/init.d/cyde_5_0_cbgrn_1 stop
+fi
+if [ -f /etc/init.d/cyssp_cbgrn_1 ]; then
+    /etc/init.d/cyssp_cbgrn_1 stop
+fi
 rm -rf /var/www/cgi-bin/cbgrn
 rm -rf /var/www/html/cbgrn
 rm -rf /usr/local/cybozu
