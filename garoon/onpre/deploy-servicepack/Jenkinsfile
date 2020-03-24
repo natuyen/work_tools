@@ -88,7 +88,7 @@ try {
                         sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
                     }
                     sh "ls -l auto-deploy/garoon/onpre"
-                    stash name: "auto-deploy", includes: "auto-deploy/garoon/onpre/*"
+                    stash name: "auto-deploy", includes: "auto-deploy/garoon/onpre/**/*"
                 }
 
             }
