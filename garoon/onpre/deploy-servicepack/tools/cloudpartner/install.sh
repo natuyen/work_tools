@@ -1,0 +1,32 @@
+#!/bin/bash -e
+. install_functions.sh
+echo "-----------------Start install Garoon Cloud Partner ..."
+export HOSTNAME=localhost
+GAROON_VERSION=""
+GAROON_SP_VERSION=""
+if [ -f "build.conf" ]; then
+    source build.conf
+    GAROON_VERSION=$PRODUCT_VERSION
+fi
+
+GAROON_SP_VERSION=$GAROON_VERSION
+if [ -f "build_sp.conf" ]; then
+    source build_sp.conf
+    GAROON_SP_VERSION=$VERSION
+fi
+
+# get version
+echo "GAROON_VERSION=$GAROON_VERSION"
+echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
+
+# install Garoon
+if [ ${UNINSTALL_OLD_GAROON} == true ]; then
+    bash -ex cloudpartner/install-cloudpartner.sh $GAROON_VERSION
+fi
+
+# install sp
+if [ "$GAROON_SP_VERSION" != "" ]; then
+    bash -ex cloudpartner/install-cloudpartner-sp.sh $GAROON_SP_VERSION
+fi
+
+echo "-----------------End install Garoon Cloud Partner."

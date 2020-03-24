@@ -100,7 +100,7 @@ try {
         }
         
         stage("Deploy") {
-            def deploySingle= {
+            def deploySingle = {
                 node(NODE_SINGLE_MACHINE) {
                     WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
                     dir(WORK_DIR_NODE_MACHINE) {
@@ -116,7 +116,7 @@ try {
                 }
             }
             
-            def deployLargescale1Machine= {
+            def deployLargescale1Machine = {
                 node(NODE_LARGESCALE1_MACHINE) {
                     WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
                     dir(WORK_DIR_NODE_MACHINE) {
@@ -132,9 +132,26 @@ try {
                 }
             }
             
+            def deployCloudPartner = {
+                node(NODE_CLOUDPARTNER_MACHINE) {
+                    WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
+                    dir(WORK_DIR_NODE_MACHINE) {
+                        sh "rm -rf *"
+                        unstash name: "auto-deploy"
+                    }
+                    
+                    dir("$WORK_DIR_DEPLOY_TOOLS") {
+                        sh "bash -ex cloudpartner/install.sh"
+                    }
+                    
+                    
+                }
+            }
+            
             parallel(
                 "Deploy Single": deploySingle,
                 "Deploy Largescale 1 machine": deployLargescale1Machine,
+                "Deploy Cloud Partner": deployCloudPartner,
             )
         }
     }
