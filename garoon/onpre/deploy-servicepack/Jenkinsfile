@@ -82,13 +82,13 @@ try {
 
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
                     if (fileExists('garoon/build/build.conf')) {
-                        sh "cp -rf garoon/build/build.conf auto-deploy"
+                        sh "cp -rf garoon/build/build.conf auto-deploy/garoon/onpre/deploy-servicepack/tools"
                     }
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
-                        sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
+                        sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy/garoon/onpre/deploy-servicepack/tools"
                     }
                     sh "ls -l auto-deploy/garoon/onpre"
-                    stash name: "auto-deploy", includes: "auto-deploy/garoon/onpre/**/*"
+                    stash name: "auto-deploy", includes: "auto-deploy/garoon/onpre/deploy-servicepack/tools/"
                 }
 
             }
