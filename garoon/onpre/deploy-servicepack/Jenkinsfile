@@ -60,7 +60,7 @@ try {
                         clearWorkspace                   : true,
                         extensions                       : [
                                 [$class: "GitLFSPull"],
-                                [$class: "CleanBeforeCheckout"],
+                                //[$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
                         submoduleCfg                     : [],
@@ -87,7 +87,7 @@ try {
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
                         sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
                     }
-                    stash name: "auto-deploy", includes: "auto-deploy/*"
+                    stash name: "auto deploy", includes: "auto-deploy/"
                 }
 
             }
@@ -100,7 +100,7 @@ try {
                 WORK_DIR_NODE_SINGLE_MACHINE="${env.WORKSPACE}"
                 dir(WORK_DIR_NODE_SINGLE_MACHINE) {
                     sh "rm -rf *"
-                    unstash name: "auto-deploy"
+                    unstash name: "auto deploy"
                 }
             }
         }
