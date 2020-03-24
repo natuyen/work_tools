@@ -55,7 +55,7 @@ try {
                         doGenerateSubmoduleConfigurations: false,
                         clearWorkspace                   : true,
                         extensions                       : [
-                                [$class: "GitLFSPull"],
+                                //[$class: "GitLFSPull"],
                                 [$class: "CleanBeforeCheckout"],
                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'garoon'],
                         ],
@@ -80,7 +80,7 @@ try {
                     // copy builds config
                     sh '''
                         pwd
-                        if -f "${env.WORKSPACE}/${env.BUILD_ID}/garoon/build/build.conf"; then
+                        if -f "garoon/build/build.conf"; then
                             echo "ton tai"
                             cp -rf garoon/build/build.conf auto-deploy
                         fi
