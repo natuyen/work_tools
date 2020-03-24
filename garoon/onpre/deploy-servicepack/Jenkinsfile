@@ -5,8 +5,8 @@ def NODE_DOCKER_LINUX = "grbuild14"
 def WORK_DIR_NODE_DOCKER_LINUX
 
 def NODE_SINGLE_MACHINE = "leo-deploy-onpre-single"
-def WORK_DIR_NODE_SINGLE_MACHINE
-
+def NODE_CLOUDPARTNER_MACHINE = "leo-deploy-onpre-cloudpartner/"
+def NODE_LARGESCALE1_MACHINE = "leo-deploy-onpre-largescale1machine "
 
 def WORK_DIR_DEPLOY = "auto-deploy/garoon/onpre/deploy-servicepack"
 def WORK_DIR_DEPLOY_TOOLS = "$WORK_DIR_DEPLOY/tools"
@@ -116,8 +116,25 @@ try {
                 }
             }
             
+            def deployLargescale1Machine= {
+                node(NODE_LARGESCALE1_MACHINE) {
+                    WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
+                    dir(WORK_DIR_NODE_MACHINE) {
+                        sh "rm -rf *"
+                        unstash name: "auto-deploy"
+                    }
+                    
+                    dir("$WORK_DIR_DEPLOY_TOOLS") {
+                        sh "bash -ex largescale/install-largescale.sh"
+                    }
+                    
+                    
+                }
+            }
+            
             parallel(
-                    "Deploy Single": deploySingle,
+                "Deploy Single": deploySingle,
+                "Deploy Largescale 1 machine": deployLargescale1Machine,
             )
         }
     }

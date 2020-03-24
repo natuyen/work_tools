@@ -1,5 +1,7 @@
 #!/bin/bash -e
-echo "-----------------Start install Garoon Single ..."
+
+echo "-----------------Start install Garoon Largescale ..."
+export HOSTNAME=localhost
 
 GAROON_VERSION=""
 GAROON_SP_VERSION=""
@@ -21,16 +23,13 @@ echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
 
 # install Garoon
 #if [ ${UNINSTALL_OLD_GAROON} == true ]; then
-    bash -ex single/install-single.sh $GAROON_VERSION
+    bash -ex largescale/install-largescale.sh $GAROON_VERSION
 #fi
 
 # install sp
 if [ "$GAROON_SP_VERSION" != "" ]; then
-    bash -ex single/install-single-sp.sh $GAROON_SP_VERSION
+    bash -ex largescale/install-largescale-sp.sh $GAROON_SP_VERSION
 fi
 
-
-echo "-----------------End install Garoon Single."
-
-
+echo "-----------------End install Garoon Largescale."
 
