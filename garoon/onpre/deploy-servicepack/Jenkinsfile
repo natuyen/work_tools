@@ -80,14 +80,9 @@ try {
                     if (fileExists('garoon/build/build.conf')) {
                         sh "cp -rf garoon/build/build.conf auto-deploy"
                     }
-                    // copy builds config
-                    // sh '''
-                    //     pwd
-                    //     if -d garoon/build"; then
-                    //         echo "ton tai"
-                            
-                    //     fi
-                    // '''
+                    if (fileExists('garoon/build_sp/build_sp.conf')) {
+                        sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
+                    }
                 }
 
             }
