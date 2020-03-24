@@ -87,6 +87,7 @@ try {
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
                         sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy"
                     }
+                    stash name: "auto-deploy", includes: "*"
                 }
 
             }
@@ -99,7 +100,7 @@ try {
                 WORK_DIR_NODE_SINGLE_MACHINE="LEO"
                 sh "rm -rf WORK_DIR_NODE_SINGLE_MACHINE"
                 dir(WORK_DIR_NODE_SINGLE_MACHINE) {
-                    
+                    unstash name: "auto-deploy"
                 }
             }
         }
