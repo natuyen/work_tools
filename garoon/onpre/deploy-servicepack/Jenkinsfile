@@ -77,14 +77,17 @@ try {
                 }
 
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    if (fileExists('garoon/build/build.conf')) {
+                        sh "cp -rf garoon/build/build.conf auto-deploy"
+                    }
                     // copy builds config
-                    sh '''
-                        pwd
-                        if -d "garoon/build"; then
-                            echo "ton tai"
-                            cp -rf garoon/build/build.conf auto-deploy
-                        fi
-                    '''
+                    // sh '''
+                    //     pwd
+                    //     if -d garoon/build"; then
+                    //         echo "ton tai"
+                            
+                    //     fi
+                    // '''
                 }
 
             }
