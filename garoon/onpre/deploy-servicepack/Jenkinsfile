@@ -100,19 +100,25 @@ try {
         }
         
         stage("Deploy") {
-            node(NODE_SINGLE_MACHINE) {
-                WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
-                dir(WORK_DIR_NODE_MACHINE) {
-                    sh "rm -rf *"
-                    unstash name: "auto-deploy"
+            def deploySingle= {
+                node(NODE_SINGLE_MACHINE) {
+                    WORK_DIR_NODE_MACHINE="${env.WORKSPACE}"
+                    dir(WORK_DIR_NODE_MACHINE) {
+                        sh "rm -rf *"
+                        unstash name: "auto-deploy"
+                    }
+                    
+                    dir("$WORK_DIR_DEPLOY_TOOLS") {
+                        sh "bash -ex single/install.sh"
+                    }
+                    
+                    
                 }
-                
-                dir("$WORK_DIR_DEPLOY_TOOLS") {
-                    sh "bash -ex single/install.sh"
-                }
-                
-                
             }
+            
+            parallel(
+                    "Deploy Single": deploySingle,
+            )
         }
     }
 } catch (err) {
