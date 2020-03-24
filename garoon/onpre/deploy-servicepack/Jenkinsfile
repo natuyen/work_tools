@@ -8,6 +8,9 @@ def NODE_SINGLE_MACHINE = "leo-deploy-onpre-single"
 def WORK_DIR_NODE_SINGLE_MACHINE
 
 
+def WORK_DIR_DEPLOY=auto-deploy/garoon/onpre/deploy-servicepack
+def WORK_DIR_DEPLOY_TOOLS=$WORK_DIR_DEPLOY/tools
+
 // Environment
 def WORKER_TOOL_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:tuyen-nguyen/work_tools.git"
 def GAROON_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:garoon/garoon.git"
@@ -82,13 +85,13 @@ try {
 
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
                     if (fileExists('garoon/build/build.conf')) {
-                        sh "cp -rf garoon/build/build.conf auto-deploy/garoon/onpre/deploy-servicepack/tools"
+                        sh "cp -rf garoon/build/build.conf $WORK_DIR_DEPLOY_TOOLS"
                     }
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
-                        sh "cp -rf garoon/build_sp/build_sp.conf auto-deploy/garoon/onpre/deploy-servicepack/tools"
+                        sh "cp -rf garoon/build_sp/build_sp.conf $WORK_DIR_DEPLOY_TOOLS"
                     }
                     sh "ls -l auto-deploy/garoon/onpre"
-                    stash name: "auto-deploy", includes: "auto-deploy/garoon/onpre/deploy-servicepack/tools/"
+                    stash name: "auto-deploy", includes: "$WORK_DIR_DEPLOY_TOOLS/"
                 }
 
             }
@@ -103,6 +106,12 @@ try {
                     sh "rm -rf *"
                     unstash name: "auto-deploy"
                 }
+                
+                dir("$WORK_DIR_DEPLOY_TOOLS") {
+                    sh "bash -ex single/install.sh"
+                }
+                
+                
             }
         }
     }
