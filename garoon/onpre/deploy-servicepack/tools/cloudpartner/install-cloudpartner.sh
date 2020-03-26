@@ -51,7 +51,7 @@ cd /var/www/cgi-bin/cbgrn
 ls -l
 
 # /etc/init.d/cyde_5_0_cbgrn_1 stop
-# /etc/init.d/cyde_5_0_cbgrn_1 start
+/etc/init.d/cyde_5_0_cbgrn_1 start
 # /etc/init.d/cyde_5_0_cbgrn_1 status
 # /etc/init.d/cyssp_cbgrn_1 restart
 
