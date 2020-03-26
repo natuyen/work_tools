@@ -50,9 +50,9 @@ service httpd restart
 cd /var/www/cgi-bin/cbgrn
 ls -l
 
-/etc/init.d/cyde_5_0_cbgrn_1 stop
-/etc/init.d/cyde_5_0_cbgrn_1 start
-/etc/init.d/cyde_5_0_cbgrn_1 status
-/etc/init.d/cyssp_cbgrn_1 restart
+# /etc/init.d/cyde_5_0_cbgrn_1 stop
+# /etc/init.d/cyde_5_0_cbgrn_1 start
+# /etc/init.d/cyde_5_0_cbgrn_1 status
+# /etc/init.d/cyssp_cbgrn_1 restart
 
 echo "----------------------------End install Garoon Cloud Partner ${GAROON_VERSION}"
