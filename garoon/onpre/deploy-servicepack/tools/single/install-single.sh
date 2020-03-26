@@ -59,4 +59,6 @@ service httpd restart
 cd /var/www/cgi-bin/cbgrn
 ls -l
 
+/etc/init.d/cyde_5_0 restart
+
 echo "-----------------End install Garoon Single ${GAROON_VERSION}..."
