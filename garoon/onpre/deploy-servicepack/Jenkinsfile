@@ -18,8 +18,8 @@ def GAROON_JENKIN_CREDENTIAL_ID = "jenkins-github-deploy-key"
 
 // Input Parameters
 def GIT_BRANCH = "${BRANCH}"
-//def IS_FORCE_BINARY_COMPILE = Boolean.valueOf("${IS_FORCE_BINARY_COMPILE}")
-//def ARCHIVE_WINDOWS = Boolean.valueOf("${ARCHIVE_WINDOWS}")
+def INSTALL_SERVICE_PACK = Boolean.valueOf("${INSTALL_SERVICE_PACK}")
+echo "INSTALL_SERVICE_PACK:${INSTALL_SERVICE_PACK}"
 
 // process
 try {
