@@ -15,20 +15,13 @@ echo "-----------------Start install Garoon Single ..."
 #     GAROON_SP_VERSION=$VERSION
 # fi
 
-# get version
-echo "222222222222222222222222"
-echo "GAROON_VERSION=$GAROON_VERSION"
-echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
-echo "INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK"
-
-
 # install Garoon
 #if [ ${UNINSTALL_OLD_GAROON} == true ]; then
     bash -ex single/install-single.sh $GAROON_VERSION
 #fi
 
 # install sp
-if [ "$GAROON_SP_VERSION" != "" ]; then
+if [ $INSTALL_SERVICE_PACK == true -a "$GAROON_SP_VERSION" != "" ]; then
     bash -ex single/install-single-sp.sh $GAROON_SP_VERSION
 fi
 
