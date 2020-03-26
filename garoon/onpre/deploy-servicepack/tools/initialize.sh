@@ -14,6 +14,10 @@ if [ -f "build_sp.conf" ]; then
     GAROON_SP_VERSION=$VERSION
 fi
 
+# assign environment
+export GAROON_VERSION=$GAROON_VERSION 
+export GAROON_SP_VERSION=$GAROON_SP_VERSION 
+
 # get version
 echo "GAROON_VERSION=$GAROON_VERSION"
 echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"

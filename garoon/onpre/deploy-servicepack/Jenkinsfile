@@ -111,10 +111,10 @@ try {
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
                         sh '''
-                            bash -ex initialize.sh
-                            echo "GAROON_VERSION=$GAROON_VERSION"
-                            echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
-                            echo "INSTALL_SERVICE_PACK:${INSTALL_SERVICE_PACK}"
+                            //bash -ex initialize.sh
+                            //echo "GAROON_VERSION=$GAROON_VERSION"
+                            //echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
+                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex single/install.sh
                         '''
                         
