@@ -60,5 +60,6 @@ cd /var/www/cgi-bin/cbgrn
 ls -l
 
 /etc/init.d/cyde_5_0 restart
+/etc/init.d/cyss_cbgrn restart
 
 echo "-----------------End install Garoon Single ${GAROON_VERSION}..."
