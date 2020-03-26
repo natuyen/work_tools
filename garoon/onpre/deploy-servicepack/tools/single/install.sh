@@ -1,6 +1,6 @@
 #!/bin/bash -e
 echo "-----------------Start install Garoon Single ..."
-bash -ex initialize.sh
+. initialize.sh
 
 # GAROON_VERSION=""
 # GAROON_SP_VERSION=""
