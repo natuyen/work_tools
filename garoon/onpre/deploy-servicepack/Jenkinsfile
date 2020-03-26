@@ -38,7 +38,7 @@ try {
                     // checkout deploy tool
                     checkout([
                             $class                           : "GitSCM",
-                            branches                         : [[name: "origin/deploy-onpre-servicepack"]],
+                            branches                         : [[name: "origin/deploy-onpre-servicepack-optimize"]],
                             doGenerateSubmoduleConfigurations: false,
                             //clearWorkspace                   : true,
                             extensions                       : [
