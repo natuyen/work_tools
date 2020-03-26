@@ -32,6 +32,7 @@ cd /var/www/cgi-bin/cbgrn
 ls -l
 
 /etc/init.d/cyde_5_0 restart
+/etc/init.d/cyde_5_0 status
 /etc/init.d/cyss_cbgrn restart
 
 echo "----------------End install Single Service Pack ${SP_VERSION}"

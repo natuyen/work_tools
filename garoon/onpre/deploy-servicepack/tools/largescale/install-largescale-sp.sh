@@ -22,6 +22,7 @@ cd /usr/local/cybozu/cbgrn
 ls -l
 
 /etc/init.d/cyde_5_0 restart
+/etc/init.d/cyde_5_0 status
 /etc/init.d/cyss_cbgrn restart
 
 echo "------End install LargeScale Service Pack ${SP_VERSION}"
