@@ -38,9 +38,4 @@ sudo sh install.sh garoon64 setting.ini
 # start Apache
 service httpd restart
 
-# /etc/init.d/cyde_5_0 stop
-# /etc/init.d/cyde_5_0 start
-# /etc/init.d/cyde_5_0 status
-# /etc/init.d/cyss_cbgrn restart
-
 echo "----------------------------End install Garoon Largescale ${GAROON_VERSION}"

@@ -48,9 +48,5 @@ sed -i "s/^\[Global\]/\[Global\]\ndebug=1/" /var/www/cgi-bin/cbgrn/common.ini
 # start Apache
 service httpd restart
 
-# /etc/init.d/cyde_5_0_cbgrn_1 stop
-# /etc/init.d/cyde_5_0_cbgrn_1 start
-# /etc/init.d/cyde_5_0_cbgrn_1 status
-# /etc/init.d/cyssp_cbgrn_1 restart
 
 echo "----------------------------End install Garoon Cloud Partner ${GAROON_VERSION}"

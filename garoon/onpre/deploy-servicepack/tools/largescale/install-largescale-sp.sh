@@ -18,12 +18,7 @@ sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /usr/local/cybozu/cbgrn
 
 # start Apache
 service httpd restart
-cd /usr/local/cybozu/cbgrn
-ls -l
 
-/etc/init.d/cyde_5_0 stop
-/etc/init.d/cyde_5_0 start
-/etc/init.d/cyde_5_0 status
 /etc/init.d/cyss_cbgrn restart
 
 echo "------End install LargeScale Service Pack ${SP_VERSION}"

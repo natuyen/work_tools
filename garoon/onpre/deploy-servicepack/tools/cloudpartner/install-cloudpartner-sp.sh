@@ -20,12 +20,7 @@ sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /var/www/cgi-bin/cbgrn/
 
 # start Apache
 service httpd restart
-cd /var/www/cgi-bin/cbgrn
-ls -l
 
-/etc/init.d/cyde_5_0_cbgrn_1 stop
-/etc/init.d/cyde_5_0_cbgrn_1 start
-/etc/init.d/cyde_5_0_cbgrn_1 status
 /etc/init.d/cyssp_cbgrn_1 restart
 
 echo "------End install Cloud Partner Service Pack ${SP_VERSION}"
