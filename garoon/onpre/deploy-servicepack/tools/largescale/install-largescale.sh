@@ -40,9 +40,9 @@ service httpd restart
 cd /usr/local/cybozu/cbgrn
 ls -l
 
-/etc/init.d/cyde_5_0 stop
-/etc/init.d/cyde_5_0 start
-/etc/init.d/cyde_5_0 status
-/etc/init.d/cyss_cbgrn restart
+# /etc/init.d/cyde_5_0 stop
+# /etc/init.d/cyde_5_0 start
+# /etc/init.d/cyde_5_0 status
+# /etc/init.d/cyss_cbgrn restart
 
 echo "----------------------------End install Garoon Largescale ${GAROON_VERSION}"
