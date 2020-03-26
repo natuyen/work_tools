@@ -18,6 +18,7 @@ bash initialize.sh
 # get version
 echo "GAROON_VERSION=$GAROON_VERSION"
 echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
+echo "INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK"
 
 
 # install Garoon
