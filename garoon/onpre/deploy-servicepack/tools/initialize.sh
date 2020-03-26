@@ -1,5 +1,5 @@
 #!/bin/bash -e
-echo "-----------------Read config"
+echo "-----------------Start read config"
 
 GAROON_VERSION=""
 GAROON_SP_VERSION=""
@@ -22,3 +22,5 @@ export GAROON_SP_VERSION=$GAROON_SP_VERSION
 echo "GAROON_VERSION=$GAROON_VERSION"
 echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
 echo "INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK"
+
+echo "-----------------End read config."
