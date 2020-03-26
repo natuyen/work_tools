@@ -56,15 +56,12 @@ EOF
 
 # start Apache
 service httpd restart
-cd /var/www/cgi-bin/cbgrn
-ls -l
+
+ifconfig
 
 # /etc/init.d/cyde_5_0 stop
 /etc/init.d/cyde_5_0 status
-sleep 3
-/etc/init.d/cyde_5_0 start
-sleep 3
-/etc/init.d/cyde_5_0 status
+
 # /etc/init.d/cyss_cbgrn restart
 
 
