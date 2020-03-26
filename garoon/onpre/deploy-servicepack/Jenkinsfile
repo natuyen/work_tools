@@ -113,6 +113,7 @@ try {
                         sh '''
                             export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex single/install.sh
+                            /etc/init.d/cyde_5_0 restart
                         '''
                         
                 
