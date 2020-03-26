@@ -114,9 +114,7 @@ try {
                             export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex single/install.sh
                             /etc/init.d/cyde_5_0 restart
-                        '''
-                        
-                
+                        ''' 
                     }
                     
                     
@@ -132,7 +130,11 @@ try {
                     }
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
-                        sh "bash -ex largescale/install.sh"
+                        sh '''
+                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
+                            bash -ex largescale/install.sh
+                            /etc/init.d/cyde_5_0 restart
+                        '''
                     }
                     
                     
@@ -148,16 +150,18 @@ try {
                     }
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
-                        sh "bash -ex cloudpartner/install.sh"
+                        sh '''
+                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
+                            bash -ex cloudpartner/install.sh
+                            /etc/init.d/cyde_5_0_cbgrn_1 restart
+                        '''
                     }
-                    
-                    
                 }
             }
             
             parallel(
                 "Deploy Single": deploySingle,
-                "Deploy Largescale 1 machine": deployLargescale1Machine,
+                "Deploy Largescale 1 Machine": deployLargescale1Machine,
                 "Deploy Cloud Partner": deployCloudPartner,
             )
         }

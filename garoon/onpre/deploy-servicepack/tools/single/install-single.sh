@@ -57,12 +57,4 @@ EOF
 # start Apache
 service httpd restart
 
-ifconfig
-
-# /etc/init.d/cyde_5_0 stop
-/etc/init.d/cyde_5_0 status
-ps aux | grep mysql
-# /etc/init.d/cyss_cbgrn restart
-
-
 echo "-----------------End install Garoon Single ${GAROON_VERSION}..."
