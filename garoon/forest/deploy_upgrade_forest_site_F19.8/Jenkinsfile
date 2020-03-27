@@ -41,6 +41,7 @@ if (GAROON_NEW_BRANCH != ''){
 def download_archive(branch, buildNumber, pattern){
     node(NODE_LINUX) {
         dir(WORK_DIR_NODE_LINUX){
+            // find on garoon folder
             sh "mkdir -p garoon"
             def mount_ret = sh(returnStdout: true, script: '''#!/bin/bash
                                 if ! mountpoint -q "garoon"; then
@@ -55,10 +56,7 @@ def download_archive(branch, buildNumber, pattern){
             else {
                 archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
-
-            echo "archiveFilePath: ${archiveFilePath}"
-            sh "cp -rf ${archiveFilePath} ."
-            sh "umount garoon"
+            
 
             // find on garoon4
             if(archiveFilePath == ""){
@@ -78,6 +76,12 @@ def download_archive(branch, buildNumber, pattern){
                 echo "archiveFilePath: ${archiveFilePath}"
                 sh "cp -rf ${archiveFilePath} ."
                 sh "umount garoon4"
+            }
+            else // on garoon
+            {
+                echo "archiveFilePath: ${archiveFilePath}"
+                sh "cp -rf ${archiveFilePath} ."
+                sh "umount garoon"    
             }
             
             
