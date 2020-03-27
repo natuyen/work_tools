@@ -55,9 +55,31 @@ def download_archive(branch, buildNumber, pattern){
             else {
                 archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
+
             echo "archiveFilePath: ${archiveFilePath}"
             sh "cp -rf ${archiveFilePath} ."
             sh "umount garoon"
+
+            // find on garoon4
+            if(archiveFilePath == ""){
+                sh "mkdir -p garoon4"
+                def mount_ret2 = sh(returnStdout: true, script: '''#!/bin/bash
+                                if ! mountpoint -q "garoon4"; then
+                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon4/ -o guest
+                                fi
+                            '''.stripIndent())
+
+                if (buildNumber == ''){
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                }
+                else {
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                }                
+                echo "archiveFilePath: ${archiveFilePath}"
+                sh "cp -rf ${archiveFilePath} ."
+                sh "umount garoon4"
+            }
+            
             
             INSTALL_ARCHIVE_NAME = sh(returnStdout: true, script: "echo ${archiveFilePath} | awk -F '/' '{print \$NF}'").trim()
             echo "INSTALL_ARCHIVE_NAME: ${INSTALL_ARCHIVE_NAME}"
