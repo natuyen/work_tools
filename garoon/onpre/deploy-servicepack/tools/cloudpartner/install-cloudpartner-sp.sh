@@ -1,10 +1,15 @@
 #!/bin/bash -e
 source install.conf
 SP_VERSION=$1
-echo "------Starting install Cloud Partner Service Pack : ${SP_VERSION}"
-# download sp archive
 SP_CLOUDPARTNER_PARTTERN=grn-cloud-${SP_VERSION}.tar.gz
-bash -ex download_archive.sh ${SP_VERSION} ${SP_CLOUDPARTNER_PARTTERN}
+echo "------Starting install Cloud Partner Service Pack : ${SP_VERSION} - Branch: ${GAROON_SP_BRANCH}"
+# download single sp archive
+TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
+SP_BRANCH_FOLDER=${TODAY}*
+if [ "${GAROON_SP_BRANCH}" != ${SP_VERSION} ]; then
+    SP_BRANCH_FOLDER=${GAROON_SP_BRANCH}
+fi
+bash -ex download_archive.sh ${SP_VERSION}/${SP_BRANCH_FOLDER} ${SP_CLOUDPARTNER_PARTTERN}
 
 # install new Service Pack
 cd archive
@@ -15,7 +20,7 @@ cd grn-cloud-${SP_VERSION}
 sh install.sh config
 
 # edit build date
-BUILD_DATE_DEBUG=${TODAY}-${SP_BRANCH}
+BUILD_DATE_DEBUG=${TODAY}-${GAROON_SP_BRANCH}
 sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /var/www/cgi-bin/cbgrn/garoon.ini
 
 # start Apache
