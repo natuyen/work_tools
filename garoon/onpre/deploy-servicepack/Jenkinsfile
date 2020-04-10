@@ -18,6 +18,7 @@ def GAROON_JENKIN_CREDENTIAL_ID = "jenkins-github-deploy-key"
 
 // Input Parameters
 def GIT_BRANCH = "${BRANCH}"
+def TOOL_BRANCH = "${TOOL_BRANCH}"
 def INSTALL_SERVICE_PACK = Boolean.valueOf("${INSTALL_SERVICE_PACK}")
 echo "INSTALL_SERVICE_PACK:${INSTALL_SERVICE_PACK}"
 
@@ -38,7 +39,7 @@ try {
                     // checkout deploy tool
                     checkout([
                             $class                           : "GitSCM",
-                            branches                         : [[name: "origin/develop"]],
+                            branches                         : [[name: "origin/${TOOL_BRANCH}"]],
                             doGenerateSubmoduleConfigurations: false,
                             //clearWorkspace                   : true,
                             extensions                       : [
