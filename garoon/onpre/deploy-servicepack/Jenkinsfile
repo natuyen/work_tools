@@ -90,7 +90,7 @@ try {
                         sh "cp -rf garoon/build/build.conf $WORK_DIR_DEPLOY_TOOLS"
                     }
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
-                        sh "echo SP_VERSION=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/build_sp.conf"
+                        sh "echo SP_BRANCH=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/build_sp.conf"
                         sh "cp -rf garoon/build_sp/build_sp.conf $WORK_DIR_DEPLOY_TOOLS"
                     }
                     sh "ls -l auto-deploy/garoon/onpre"
