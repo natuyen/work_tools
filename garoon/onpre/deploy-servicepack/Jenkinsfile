@@ -4,9 +4,9 @@
 def NODE_DOCKER_LINUX = "grbuild14"
 def WORK_DIR_NODE_DOCKER_LINUX
 
-def NODE_SINGLE_MACHINE = "leo-deploy-onpre-single"
-def NODE_CLOUDPARTNER_MACHINE = "leo-deploy-onpre-cloudpartner"
-def NODE_LARGESCALE1_MACHINE = "leo-deploy-onpre-largescale1machine "
+def NODE_SINGLE_MACHINE = "${NODE_SINGLE}"
+def NODE_CLOUDPARTNER_MACHINE = "${NODE_CLOUDPARTNER}"
+def NODE_LARGESCALE1_MACHINE = "${NODE_LARGESCALE1_MACHINE}"
 
 def WORK_DIR_DEPLOY = "auto-deploy/garoon/onpre/deploy-servicepack"
 def WORK_DIR_DEPLOY_TOOLS = "$WORK_DIR_DEPLOY/tools"
