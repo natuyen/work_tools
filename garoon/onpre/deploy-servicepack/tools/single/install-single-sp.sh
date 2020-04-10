@@ -2,9 +2,17 @@
 source install.conf
 SP_VERSION=$1
 
-echo "-----------------Starting install Single Service Pack : ${SP_VERSION} ${GAROON_SP_BRANCH}"
+echo "-----------------Starting install Single Service Pack : ${SP_VERSION} - Branch: ${GAROON_SP_BRANCH}"
+# download single sp archive
+TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
+SP_BRANCH_FOLDER=${TODAY}*
+if [ "${GAROON_SP_BRANCH}" != ${SP_VERSION} ]; then
+    SP_BRANCH_FOLDER=${GAROON_SP_BRANCH}
+fi
+bash -ex download_archive.sh ${SP_VERSION}/${SP_BRANCH_FOLDER} ${SP_SINGLE_PARTTERN}
+
 # download sp archive
-bash -ex download_archive.sh ${SP_VERSION} ${SP_SINGLE_PARTTERN}
+#bash -ex download_archive.sh ${SP_VERSION} ${SP_SINGLE_PARTTERN}
 
 # install new Service Pack
 ARCHIVE_NAME=$(find archive -name ${SP_SINGLE_PARTTERN} | sort | tail -n1)
