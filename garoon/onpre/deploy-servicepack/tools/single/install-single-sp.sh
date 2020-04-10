@@ -2,7 +2,7 @@
 source install.conf
 SP_VERSION=$1
 
-echo "-----------------Starting install Single Service Pack : ${SP_VERSION}"
+echo "-----------------Starting install Single Service Pack : ${SP_VERSION} ${GAROON_SP_BRANCH}"
 # download sp archive
 bash -ex download_archive.sh ${SP_VERSION} ${SP_SINGLE_PARTTERN}
 
