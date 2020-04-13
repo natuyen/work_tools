@@ -144,6 +144,8 @@ try {
                                 replace_archive()
                             }
 
+                            sh "update-garoon-static ${ARCHIVE_FOLDER_VERSION}/garoon*"
+
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                                 sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
                                 sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
