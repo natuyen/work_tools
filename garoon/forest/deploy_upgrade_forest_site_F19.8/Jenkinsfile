@@ -200,12 +200,6 @@ try {
             [NODE_LINUX, NODE_DEVMGR_1].each {
                 builders[it] = {
                     node(it) {
-                        sh '''
-                            echo WORKSPACE: ${env.WORKSPACE}
-                            cd ${env.WORKSPACE}
-                            ls -l
-
-                        '''
                         sh "rm -rf ${env.WORKSPACE}/${ARCHIVE_FOLDER}*"
                     }
                 }
