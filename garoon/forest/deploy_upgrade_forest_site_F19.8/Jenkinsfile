@@ -30,7 +30,8 @@ echo "DESTROY_SERVICE_SET: ${DESTROY_SERVICE_SET}"
 echo "GAROON_NEW_BRANCH: ${GAROON_NEW_BRANCH}"
 echo "GAROON_NEW_BUILD_NUMBER: ${GAROON_NEW_BUILD_NUMBER}"
 
-echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"\
+echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
+echo "WORKSPACE: ${env.WORKSPACE}"
 
 // specify upgrade archive/ version
 def IS_UPGRADE_ARCHIVE
@@ -204,7 +205,7 @@ try {
                     }
                 }
             }
-            // parallel builders
+            parallel builders
         }// stage
     }
 }
