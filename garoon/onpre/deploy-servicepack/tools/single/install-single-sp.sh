@@ -1,7 +1,7 @@
 #!/bin/bash -e
 source install.conf
 SP_VERSION=$1
-
+GAROON_SP_BRANCH=$2
 echo "-----------------Starting install Single Service Pack : ${SP_VERSION} - Branch: ${GAROON_SP_BRANCH}"
 # download single sp archive
 TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
