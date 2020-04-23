@@ -1,7 +1,7 @@
 #!/bin/bash -e
 source install.conf
 SP_VERSION=$1
-
+GAROON_SP_BRANCH=$2
 echo "-----------------Starting install Single Service Pack : ${SP_VERSION} - Branch: ${GAROON_SP_BRANCH}"
 # download single sp archive
 TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
@@ -27,9 +27,6 @@ expect "Installation of Service Pack completed successfully."
 exit
 EOF
 
-# edit build date
-BUILD_DATE_DEBUG=${TODAY}-${GAROON_SP_BRANCH}
-sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /var/www/cgi-bin/cbgrn/garoon.ini
 
 # start Apache
 service httpd restart
