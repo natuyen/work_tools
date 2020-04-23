@@ -1,10 +1,11 @@
 #!/bin/bash -e
 source install.conf
 GAROON_VERSION=$1
-echo "----------------------------Starting install Garoon Cloud Partner ${GAROON_VERSION}..."
+GAROON_BRANCH=$2
+echo "----------------------------Starting install Garoon Cloud Partner ${GAROON_BRANCH}..."
 # download single archive
-bash -ex download_archive.sh ${GAROON_VERSION} ${GAROON_SINGLE_PARTTERN}
-bash -ex download_archive.sh ${GAROON_VERSION} ${GAROON_CLOUDPARTNER_PARTTERN}
+bash -ex download_archive.sh ${GAROON_BRANCH} ${GAROON_SINGLE_PARTTERN}
+bash -ex download_archive.sh ${GAROON_BRANCH} ${GAROON_CLOUDPARTNER_PARTTERN}
 
 # uninstall old Garoon
 echo "--Start Uninstall old Garoon ..."
@@ -49,4 +50,4 @@ sed -i "s/^\[Global\]/\[Global\]\ndebug=1/" /var/www/cgi-bin/cbgrn/common.ini
 service httpd restart
 
 
-echo "----------------------------End install Garoon Cloud Partner ${GAROON_VERSION}"
+echo "----------------------------End install Garoon Cloud Partner ${GAROON_BRANCH}"
