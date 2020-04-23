@@ -2,7 +2,6 @@
 echo "-----------------Start read config"
 source install.conf
 GAROON_VERSION=""
-FOREST_VERSION=""
 GAROON_SP_VERSION=""
 if [ -f "build.conf" ]; then
     source build.conf
@@ -18,7 +17,6 @@ fi
 
 # assign environment
 export GAROON_VERSION=$GAROON_VERSION
-export FOREST_VERSION=$FOREST_VERSION
 export GAROON_SP_VERSION=$GAROON_SP_VERSION
 
 # get version
