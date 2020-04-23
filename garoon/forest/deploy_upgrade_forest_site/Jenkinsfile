@@ -74,8 +74,10 @@ def download_archive(branch, buildNumber, pattern){
                     archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }                
                 echo "archiveFilePath: ${archiveFilePath}"
-                sh "cp -rf ${archiveFilePath} ."
-                sh "umount garoon4"
+                if(archiveFilePath != ""){
+                    sh "cp -rf ${archiveFilePath} ."
+                    sh "umount garoon4"
+                }
             }
             else // on garoon
             {
