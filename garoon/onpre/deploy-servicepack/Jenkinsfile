@@ -86,8 +86,10 @@ try {
                 }
 
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    sh "echo GIT_BRANCH=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/install.conf"
                     if (fileExists('garoon/build/build.conf')) {
                         sh "cp -rf garoon/build/build.conf $WORK_DIR_DEPLOY_TOOLS"
+                        sh "echo GAROON_BRANCH=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/build.conf"
                     }
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
                         sh "cp -rf garoon/build_sp/build_sp.conf $WORK_DIR_DEPLOY_TOOLS"

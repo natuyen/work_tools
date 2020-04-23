@@ -1,6 +1,6 @@
 #!/bin/bash -e
 echo "-----------------Start read config"
-
+source install.conf
 GAROON_VERSION=""
 FOREST_VERSION=""
 GAROON_SP_VERSION=""
@@ -25,6 +25,7 @@ export GAROON_SP_VERSION=$GAROON_SP_VERSION
 export GAROON_SP_BRANCH=$GAROON_SP_BRANCH
 
 # get version
+echo "GIT_BRANCH=$GIT_BRANCH"
 echo "GAROON_VERSION=$GAROON_VERSION"
 echo "GAROON_SP_VERSION=$GAROON_SP_VERSION"
 echo "GAROON_SP_BRANCH=$GAROON_SP_BRANCH"
