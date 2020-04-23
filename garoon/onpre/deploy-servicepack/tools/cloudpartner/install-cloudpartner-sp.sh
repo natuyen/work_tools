@@ -1,6 +1,7 @@
 #!/bin/bash -e
 source install.conf
 SP_VERSION=$1
+GAROON_SP_BRANCH=$2
 SP_CLOUDPARTNER_PARTTERN=grn-cloud-${SP_VERSION}.tar.gz
 echo "------Starting install Cloud Partner Service Pack : ${SP_VERSION} - Branch: ${GAROON_SP_BRANCH}"
 # download single sp archive
