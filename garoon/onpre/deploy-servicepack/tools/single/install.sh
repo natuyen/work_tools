@@ -15,6 +15,11 @@ else # install only Garoon
     bash -ex single/install-single.sh $GIT_BRANCH
 fi
 
+# edit build date
+TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
+BUILD_DATE_DEBUG=${TODAY}-${GIT_BRANCH}
+sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /var/www/cgi-bin/cbgrn/garoon.ini
+
 echo "-----------------End install Garoon Single."
 
 

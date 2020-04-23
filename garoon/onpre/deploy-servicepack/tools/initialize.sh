@@ -6,7 +6,6 @@ GAROON_SP_VERSION=""
 if [ -f "build.conf" ]; then
     source build.conf
     GAROON_VERSION=$PRODUCT_VERSION
-    FOREST_VERSION=F$DEV_VERSION
 fi
 
 GAROON_SP_VERSION=$GAROON_VERSION

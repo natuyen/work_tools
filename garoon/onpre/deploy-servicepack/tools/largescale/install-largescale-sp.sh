@@ -19,9 +19,7 @@ cp -rf ../largescale/setting.ini installer_sp
 cd installer_sp
 sh install.sh setting.ini
 
-# edit build date
-BUILD_DATE_DEBUG=${TODAY}-${GAROON_SP_BRANCH}
-sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /usr/local/cybozu/cbgrn/garoon.ini
+
 
 # start Apache
 service httpd restart

@@ -12,6 +12,10 @@ else # install only Garoon
     bash -ex largescale/install-largescale.sh $GIT_BRANCH
 fi
 
+# edit build date
+TODAY=$(TZ=":Asia/Bangkok" date +"%Y%m%d")
+BUILD_DATE_DEBUG=${TODAY}-${GIT_BRANCH}
+sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /usr/local/cybozu/cbgrn/garoon.ini
 
 echo "-----------------End install Garoon Largescale."
 

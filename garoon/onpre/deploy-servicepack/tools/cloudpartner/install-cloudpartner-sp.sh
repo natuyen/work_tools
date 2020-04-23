@@ -20,9 +20,7 @@ tar xzvf ${ARCHIVE_NAME}
 cd grn-cloud-${SP_VERSION}
 sh install.sh config
 
-# edit build date
-BUILD_DATE_DEBUG=${TODAY}-${GAROON_SP_BRANCH}
-sed -i "s/^build_date.*/build_date=${BUILD_DATE_DEBUG}/" /var/www/cgi-bin/cbgrn/garoon.ini
+
 
 # start Apache
 service httpd restart
