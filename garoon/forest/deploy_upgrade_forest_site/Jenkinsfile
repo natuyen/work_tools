@@ -30,7 +30,7 @@ echo "DESTROY_SERVICE_SET: ${DESTROY_SERVICE_SET}"
 echo "GAROON_NEW_BRANCH: ${GAROON_NEW_BRANCH}"
 echo "GAROON_NEW_BUILD_NUMBER: ${GAROON_NEW_BUILD_NUMBER}"
 
-echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"\
+echo "ARCHIVE_FOLDER: ${ARCHIVE_FOLDER}"
 
 // specify upgrade archive/ version
 def IS_UPGRADE_ARCHIVE
@@ -51,10 +51,10 @@ def download_archive(branch, buildNumber, pattern){
 
             def archiveFilePath
             if (buildNumber == ''){
-                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
             else {
-                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
             
 
@@ -68,14 +68,16 @@ def download_archive(branch, buildNumber, pattern){
                             '''.stripIndent())
 
                 if (buildNumber == ''){
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }
                 else {
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }                
                 echo "archiveFilePath: ${archiveFilePath}"
-                sh "cp -rf ${archiveFilePath} ."
-                sh "umount garoon4"
+                if(archiveFilePath != ""){
+                    sh "cp -rf ${archiveFilePath} ."
+                    sh "umount garoon4"
+                }
             }
             else // on garoon
             {
@@ -144,6 +146,8 @@ try {
                                 replace_archive()
                             }
 
+                            sh "update-garoon-static ${ARCHIVE_FOLDER_VERSION}/garoon*"
+
                             withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                                 sh "domaindb ss version ${SERVICE_SET} ${GAROON_CURRENT_VERSION}"
                                 sh "/usr/local/lumber/sbin/lumber-deploy  --no-wait-nginxc-update-all --no-update-status ${SERVICE_SET} ${ARCHIVE_FOLDER_VERSION}"
@@ -202,7 +206,7 @@ try {
                     }
                 }
             }
-            // parallel builders
+            parallel builders
         }// stage
     }
 }

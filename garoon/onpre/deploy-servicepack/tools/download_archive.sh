@@ -15,7 +15,6 @@ if ! mountpoint -q "${ALIAS_DEV_RC_FOLDER}"; then
 fi
 
 ARCHIVE_PATH=$(find ${ALIAS_BRANCH_FOLDER} -name ${ARCHIVE_NAME_PARTERN} | sort | tail -n1)
-
 echo ${ARCHIVE_PATH} >> ${DEPLOY_LOG}
 mkdir -p ${ARCHIVE_FOLDER}
 cp -rf ${ARCHIVE_PATH} ${ARCHIVE_FOLDER}

@@ -86,12 +86,13 @@ try {
                 }
 
                 dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    sh "echo GIT_BRANCH=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/install.conf"
+                    sh "echo INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK >> $WORK_DIR_DEPLOY_TOOLS/install.conf"
                     if (fileExists('garoon/build/build.conf')) {
                         sh "cp -rf garoon/build/build.conf $WORK_DIR_DEPLOY_TOOLS"
                     }
                     if (fileExists('garoon/build_sp/build_sp.conf')) {
                         sh "cp -rf garoon/build_sp/build_sp.conf $WORK_DIR_DEPLOY_TOOLS"
-                        sh "echo SP_BRANCH=$GIT_BRANCH >> $WORK_DIR_DEPLOY_TOOLS/build_sp.conf"
                     }
                     sh "ls -l auto-deploy/garoon/onpre"
                     stash name: "auto-deploy", includes: "$WORK_DIR_DEPLOY_TOOLS/"
@@ -113,13 +114,11 @@ try {
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
                         sh '''
-                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex single/install.sh
                             /etc/init.d/cyde_5_0 restart
                         ''' 
                     }
-                    
-                    
+
                 }
             }
             
@@ -133,7 +132,6 @@ try {
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
                         sh '''
-                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex largescale/install.sh
                             /etc/init.d/cyde_5_0 restart
                         '''
@@ -153,7 +151,6 @@ try {
                     
                     dir("$WORK_DIR_DEPLOY_TOOLS") {
                         sh '''
-                            export INSTALL_SERVICE_PACK=$INSTALL_SERVICE_PACK
                             bash -ex cloudpartner/install.sh
                             /etc/init.d/cyde_5_0_cbgrn_1 restart
                         '''
