@@ -51,10 +51,10 @@ def download_archive(branch, buildNumber, pattern){
 
             def archiveFilePath
             if (buildNumber == ''){
-                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
             else {
-                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
             }
             
 
@@ -68,10 +68,10 @@ def download_archive(branch, buildNumber, pattern){
                             '''.stripIndent())
 
                 if (buildNumber == ''){
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }
                 else {
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}*/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }                
                 echo "archiveFilePath: ${archiveFilePath}"
                 if(archiveFilePath != ""){
