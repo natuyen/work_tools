@@ -32,15 +32,15 @@ try {
     timeout(time: 60, unit: 'MINUTES') {
         stage('Prepare archive') {
 
-            node(NODE_DEVMGR) {
-                WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
-                dir(WORK_DIR_NODE_DEVMGR) {
+            //node(NODE_DEVMGR) {
+            //    WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
+            //    dir(WORK_DIR_NODE_DEVMGR) {
                     // sh "curl -o ${GAROON_ARCHIVE} ${AWS_ARCHIVE_FOLDER}/${BRANCH}/${ARCHIVE_FOLDER}/${GAROON_ARCHIVE}"
-                    sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+            //        sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
 
-                    stash name: "garoon archive", includes: GAROON_ARCHIVE
-                }
-            }
+            //        stash name: "garoon archive", includes: GAROON_ARCHIVE
+            //    }
+            //}
 
             node(NODE_LINUX) {
                 WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
