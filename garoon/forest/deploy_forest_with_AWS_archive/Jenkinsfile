@@ -74,7 +74,8 @@ try {
                 }
 
                 dir(WORK_DIR_DEPLOY_TOOLS) {
-                    sh "get_archive.sh archive_list.txt"
+                    sh "ls -l"
+                    sh "./get_archive.sh archive_list.txt"
                 }
             }
         }
