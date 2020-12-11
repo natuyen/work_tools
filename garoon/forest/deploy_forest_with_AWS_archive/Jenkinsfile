@@ -17,8 +17,9 @@ def WORK_DIR_NODE_LINUX
 
 def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
 
-def AWS_ARCHIVE_LIST = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
-def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST}/archives"
+def AWS_ARCHIVE_LIST_URL = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST_URL}/archives"
+def AWS_ARCHIVE_LIST = "archive_list.txt"
 
 def WORK_DIR_DEPLOY_TOOLS = "forest-deploy/garoon/forest/deploy_forest_with_AWS_archive"
 
@@ -28,7 +29,11 @@ def GAROON_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:garoon/garoon.git"
 def GAROON_JENKIN_CREDENTIAL_ID = "jenkins-github-deploy-key"
 
 // parameter
+def GIT_BRANCH = "${BRANCH}"
 def TOOL_BRANCH = "${TOOL_BRANCH}"
+
+echo "GIT_BRANCH:${GIT_BRANCH}"
+echo "TOOL_BRANCH:${TOOL_BRANCH}"
 
 try {
     timeout(time: 60, unit: 'MINUTES') {
@@ -68,9 +73,9 @@ try {
                     ])
 
                     dir(WORK_DIR_DEPLOY_TOOLS) {
-                        sh "curl -o archive_list.txt ${AWS_ARCHIVE_LIST}"
+                        sh "curl -o ${AWS_ARCHIVE_LIST} ${AWS_ARCHIVE_LIST_URL}"
                         sh "ls -l"
-                        sh "sh get_archive.sh archive_list.txt"
+                        sh "sh get_archive.sh ${AWS_ARCHIVE_LIST}"
                     }
 
                     //stash name: "garoon archive", includes: GAROON_ARCHIVE
