@@ -115,7 +115,7 @@ try {
             [NODE_LINUX, NODE_DEVMGR].each {
                 machine_builders[it] = {
                     node(it) {
-                        sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
+                        //sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
                     }
                 }
             }
