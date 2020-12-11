@@ -20,8 +20,7 @@ def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
 def AWS_ARCHIVE_LIST = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
 def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST}/archives"
 
-def WORK_DIR_DEPLOY = "forest-deploy/garoon/forest/deploy_forest_with_AWS_archive"
-def WORK_DIR_DEPLOY_TOOLS = "$WORK_DIR_DEPLOY/tools"
+def WORK_DIR_DEPLOY_TOOLS = "forest-deploy/garoon/forest/deploy_forest_with_AWS_archive"
 
 // Environment
 def WORKER_TOOL_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:tuyen-nguyen/work_tools.git"
