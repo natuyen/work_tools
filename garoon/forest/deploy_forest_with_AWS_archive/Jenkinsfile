@@ -7,35 +7,77 @@ def BRANCH = "${BRANCH}"
 def ARCHIVE_FOLDER = "${ARCHIVE_FOLDER}"
 def GAROON_ARCHIVE = "${GAROON_ARCHIVE}"
 def IS_UPGRADE_SS = IS_UPGRADE_SERVICESET.toBoolean();
+
 //
-def NODE_DEVMGR_1 = "devmgr-1"
-def WORK_DIR_NODE_DEVMGR_1
+def NODE_DEVMGR = "devmgr-1"
+def WORK_DIR_NODE_DEVMGR
+
 def NODE_LINUX = "tcb-garoon-test-base"
-def WORK_DIR_NODE_DOCKER_LINUX
+def WORK_DIR_NODE_LINUX
+
 def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
 
 def AWS_ARCHIVE_LIST = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
-def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST}archives"
+def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST}/archives"
+
+// Environment
+def WORKER_TOOL_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:tuyen-nguyen/work_tools.git"
+def GAROON_REPOSITORY_URL = "git@github.dev.cybozu.co.jp:garoon/garoon.git"
+def GAROON_JENKIN_CREDENTIAL_ID = "jenkins-github-deploy-key"
+
+// parameter
+def TOOL_BRANCH = "${TOOL_BRANCH}"
 
 try {
     timeout(time: 60, unit: 'MINUTES') {
         stage('Prepare archive') {
-            node(NODE_LINUX) {
-                WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
-                dir(WORK_DIR_NODE_DOCKER_LINUX) {
+
+            node(NODE_DEVMGR) {
+                WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
+                dir(WORK_DIR_NODE_DEVMGR) {
                     // sh "curl -o ${GAROON_ARCHIVE} ${AWS_ARCHIVE_FOLDER}/${BRANCH}/${ARCHIVE_FOLDER}/${GAROON_ARCHIVE}"
                     sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
-                    sh "get_archive.sh archive_list.txt"
+
                     stash name: "garoon archive", includes: GAROON_ARCHIVE
+                }
+            }
+
+            node(NODE_LINUX) {
+                WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
+                dir(WORK_DIR_NODE_LINUX) {
+                    // checkout deploy tool
+                    checkout([
+                        $class                           : "GitSCM",
+                        branches                         : [[name: "origin/${TOOL_BRANCH}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        //clearWorkspace                   : true,
+                        extensions                       : [
+                                //[$class: "GitLFSPull"],
+                                [$class: "CleanBeforeCheckout"],
+                                [$class: 'RelativeTargetDirectory', relativeTargetDir: 'forest-deploy'],
+                        ],
+                        submoduleCfg                     : [],
+                        userRemoteConfigs                : [
+                                [
+                                    credentialsId: GAROON_JENKIN_CREDENTIAL_ID,
+                                    url: WORKER_TOOL_REPOSITORY_URL
+                                ]
+                        ]
+                    ])
+
+                    // sh "curl -o ${GAROON_ARCHIVE} ${AWS_ARCHIVE_FOLDER}/${BRANCH}/${ARCHIVE_FOLDER}/${GAROON_ARCHIVE}"
+                    //sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+
+                    //stash name: "garoon archive", includes: GAROON_ARCHIVE
                 }
             }
         }
 
         // stage('Destroy & Re-deploy serviceset') {
-        //     node(NODE_DEVMGR_1){
-        //         WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${env.BUILD_ID}"
+        //     node(NODE_DEVMGR){
+        //         WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
 
-        //         dir(WORK_DIR_NODE_DEVMGR_1){
+        //         dir(WORK_DIR_NODE_DEVMGR){
         //             //
         //             sh "rm -rf ${ARCHIVE_FOLDER_BUILD}"
         //             sh "mkdir -p ${ARCHIVE_FOLDER_BUILD}"
@@ -70,7 +112,7 @@ try {
     timeout(time: 30, unit: "MINUTES") {
         stage("cleanup") {
             def machine_builders = [:]
-            [NODE_LINUX, NODE_DEVMGR_1].each {
+            [NODE_LINUX, NODE_DEVMGR].each {
                 machine_builders[it] = {
                     node(it) {
                         sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
