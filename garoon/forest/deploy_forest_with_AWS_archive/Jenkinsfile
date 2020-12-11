@@ -75,7 +75,7 @@ try {
                     dir(WORK_DIR_DEPLOY_TOOLS) {
                         sh "curl -o ${AWS_ARCHIVE_LIST} ${AWS_ARCHIVE_LIST_URL}"
                         sh "ls -l"
-                        sh "sh get_archive.sh ${AWS_ARCHIVE_LIST}"
+                        sh "sh get_archive.sh ${AWS_ARCHIVE_LIST} ${BRANCH} -GRF"
                     }
 
                     //stash name: "garoon archive", includes: GAROON_ARCHIVE
