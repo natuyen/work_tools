@@ -67,10 +67,10 @@ try {
                         ]
                     ])
 
-                    sh "curl -o ${WORK_DIR_DEPLOY_TOOLS}/archive_list.txt ${AWS_ARCHIVE_LIST}"
                     dir(WORK_DIR_DEPLOY_TOOLS) {
+                        sh "curl -o archive_list.txt ${AWS_ARCHIVE_LIST}"
                         sh "ls -l"
-                        sh "./get_archive.sh archive_list.txt"
+                        sh "get_archive.sh archive_list.txt"
                     }
 
                     //stash name: "garoon archive", includes: GAROON_ARCHIVE
