@@ -1,0 +1,84 @@
+#! /bin/groovy
+
+// Input Parameters
+def SERVICESET_NAME = "${SERVICESET}"
+def CYDEC_VERSION = "${CYDEC_VERSION}"
+def BRANCH = "${BRANCH}"
+def ARCHIVE_FOLDER = "${ARCHIVE_FOLDER}"
+def GAROON_ARCHIVE = "${GAROON_ARCHIVE}"
+def IS_UPGRADE_SS = IS_UPGRADE_SERVICESET.toBoolean();
+//
+def NODE_DEVMGR_1 = "devmgr-1"
+def WORK_DIR_NODE_DEVMGR_1
+def NODE_LINUX = "tcb-garoon-test-base"
+def WORK_DIR_NODE_DOCKER_LINUX
+def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
+
+def AWS_ARCHIVE_LIST = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST}archives"
+
+try {
+    timeout(time: 60, unit: 'MINUTES') {
+        stage('Prepare archive') {
+            node(NODE_LINUX) {
+                WORK_DIR_NODE_DOCKER_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
+                dir(WORK_DIR_NODE_DOCKER_LINUX) {
+                    // sh "curl -o ${GAROON_ARCHIVE} ${AWS_ARCHIVE_FOLDER}/${BRANCH}/${ARCHIVE_FOLDER}/${GAROON_ARCHIVE}"
+                    sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+                    sh "get_archive.sh archive_list.txt"
+                    stash name: "garoon archive", includes: GAROON_ARCHIVE
+                }
+            }
+        }
+
+        // stage('Destroy & Re-deploy serviceset') {
+        //     node(NODE_DEVMGR_1){
+        //         WORK_DIR_NODE_DEVMGR_1 = "${env.WORKSPACE}/${env.BUILD_ID}"
+
+        //         dir(WORK_DIR_NODE_DEVMGR_1){
+        //             //
+        //             sh "rm -rf ${ARCHIVE_FOLDER_BUILD}"
+        //             sh "mkdir -p ${ARCHIVE_FOLDER_BUILD}"
+        //             sh "cp -r /home/qa/${CYDEC_VERSION}/* ${ARCHIVE_FOLDER_BUILD}"
+        //             sh "rm -f ${ARCHIVE_FOLDER_BUILD}/garoon-GRF*.tgz"
+
+        //             //
+        //             unstash name: "garoon archive"
+        //             sh "mv ${GAROON_ARCHIVE} ${ARCHIVE_FOLDER_BUILD}"
+        //             sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
+
+        //             if( IS_UPGRADE_SS ){
+        //                 sh "echo 'Update forest site with new archive'"
+        //                 sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
+        //                 sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
+        //             } else {
+        //                 withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+        //                     sh "echo 'Deploy new archive for forest site'"
+        //                     sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
+        //                     sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
+        //                     sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+} catch (err) {
+    throw err
+} finally {
+    // cleanup
+    timeout(time: 30, unit: "MINUTES") {
+        stage("cleanup") {
+            def machine_builders = [:]
+            [NODE_LINUX, NODE_DEVMGR_1].each {
+                machine_builders[it] = {
+                    node(it) {
+                        sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
+                    }
+                }
+            }
+
+            parallel machine_builders
+        }
+    }
+}
