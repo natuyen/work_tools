@@ -23,7 +23,8 @@ for i in ${!archives[*]}
 do
    ARCHIVE_GAROON="${archives[$i]}"
 done
-echo "ARCHIVE_GAROON=${ARCHIVE_GAROON}" > deploy_variable.conf
+#echo "ARCHIVE_GAROON=${ARCHIVE_GAROON}" > deploy_variable.conf
+echo ${ARCHIVE_GAROON}
 
 
 #

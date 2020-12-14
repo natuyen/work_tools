@@ -75,10 +75,12 @@ try {
                     dir(WORK_DIR_DEPLOY_TOOLS) {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
-                        sh "sh -x get_archive.sh ${BRANCH} -GRF"
-                        sh "ls -l"
-                        sh "source deploy_variable.conf"
-                        sh "echo ${ARCHIVE_GAROON}"
+                        archiveFilePath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
+                        echo "archiveFilePath: ${archiveFilePath}"
+                        #sh "sh -x get_archive.sh ${BRANCH} -GRF"
+                        #sh "ls -l"
+                        #sh "source deploy_variable.conf"
+                        #sh "echo ${ARCHIVE_GAROON}"
                     }
 
                     //stash name: "garoon archive", includes: GAROON_ARCHIVE
