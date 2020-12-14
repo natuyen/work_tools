@@ -77,7 +77,7 @@ try {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
                         archiveGaroonPath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
-                        archiveGaroonName = sh(returnStdout: true, script: "basename ${archiveGaroonPath}").trim()
+                        archiveGaroonName = sh(returnStdout: true, script: "basename '${archiveGaroonPath}'").trim()
                         echo "archiveGaroonPath: ${archiveGaroonPath}"
                         echo "archiveGaroonName: ${archiveGaroonName}"
                         sh "curl -o ${archiveGaroonName} ${AWS_URL}/${archiveGaroonPath}"
