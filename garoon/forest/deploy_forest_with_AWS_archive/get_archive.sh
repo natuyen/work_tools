@@ -23,8 +23,8 @@ for i in ${!archives[*]}
 do
    ARCHIVE_GAROON="${archives[$i]}"
 done
-echo "${ARCHIVE_GAROON}"
-export ARCHIVE_GAROON=${ARCHIVE_GAROON}
+echo "ARCHIVE_GAROON=${ARCHIVE_GAROON}" > deploy_variable.txt
+
 
 #
 ##cat archive_list_filter.txt | grep -E "F20.11-2020-12-10-with-e2e".*"-GRF" | sort | tail -n1
