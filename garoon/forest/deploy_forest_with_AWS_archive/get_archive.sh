@@ -11,7 +11,7 @@ for i in ${!archives[*]}
 do
    ARCHIVE_FOLDER_LASTEST="${archives[$i]}"
 done
-echo "${ARCHIVE_FOLDER_LASTEST}"
+#echo "${ARCHIVE_FOLDER_LASTEST}"
 
 # get archive garoon
 ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=${ARCHIVE_FOLDER_LASTEST}"
