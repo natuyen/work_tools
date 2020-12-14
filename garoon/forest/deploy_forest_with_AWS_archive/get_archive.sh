@@ -14,7 +14,7 @@ done
 echo "${ARCHIVE_FOLDER_LASTEST}"
 
 # get archive garoon
-ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/index.html#${ARCHIVE_FOLDER_LASTEST}"
+ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=${ARCHIVE_FOLDER_LASTEST}%2F"
 ARCHIVE_LIST=archive_list.txt
 curl -o ${ARCHIVE_LIST} "${ARCHIVE_FOLDER_LASTEST_URL}"
 ARCHIVE_GAROON=
