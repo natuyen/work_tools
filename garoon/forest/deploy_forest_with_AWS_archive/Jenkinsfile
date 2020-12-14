@@ -77,9 +77,10 @@ try {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
                         archiveGaroonPath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
+                        echo "archiveGaroonPath: ${archiveGaroonPath}"
                         archiveGaroonName = sh(returnStdout: true, script: "basename '${archiveGaroonPath}'").trim()
                         echo "archiveGaroonName: ${archiveGaroonName}"
-                        echo "archiveGaroonPath: ${archiveGaroonPath}"
+
                         sh "curl -o ${archiveGaroonName} ${AWS_URL}/${archiveGaroonPath}"
                         stash name: "garoon archive", includes: "${archiveGaroonName}"
                     }
