@@ -17,7 +17,9 @@ def WORK_DIR_NODE_LINUX
 
 def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
 
-def AWS_ARCHIVE_LIST_URL = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+def AWS_URL = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/
+archives/F21.2/202012030654_270884/garoon-GRF21.2_270884.tgz
 def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST_URL}/archives"
 def AWS_ARCHIVE_LIST = "archive_list.txt"
 
@@ -51,6 +53,7 @@ try {
 
             node(NODE_LINUX) {
                 WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
+                def archiveGaroonUrl
                 dir(WORK_DIR_NODE_LINUX) {
                     // checkout deploy tool
                     checkout([
@@ -75,16 +78,15 @@ try {
                     dir(WORK_DIR_DEPLOY_TOOLS) {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
-                        archiveFilePath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
-                        echo "archiveFilePath: ${archiveFilePath}"
-                        source "deploy_variable.conf"
-                        //sh "sh -x get_archive.sh ${BRANCH} -GRF"
-                        //sh "ls -l"
-                        //sh "source deploy_variable.conf"
-                        //sh "echo ${ARCHIVE_GAROON}"
+                        archiveGaroonPath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
+                        archiveGaroonName = sh(returnStdout: true, script: "basename ${archiveGaroonPath}").trim()
+                        echo "archiveGaroonPath: ${archiveGaroonPath}"
+                        echo "archiveGaroonName: ${archiveGaroonName}"
+                        sh "curl -o ${archiveGaroonName} ${AWS_URL}/${archiveGaroonPath}"
+                        stash name: "garoon archive", includes: ${archiveGaroonName}
                     }
 
-                    //stash name: "garoon archive", includes: GAROON_ARCHIVE
+
                 }
 
 
