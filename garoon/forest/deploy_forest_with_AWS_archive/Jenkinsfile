@@ -18,7 +18,7 @@ def WORK_DIR_NODE_LINUX
 def ARCHIVE_FOLDER_BUILD = "archive_folder_build"
 
 def AWS_URL = "https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
-def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST_URL}/archives"
+#def AWS_ARCHIVE_FOLDER = "${AWS_ARCHIVE_LIST_URL}/archives"
 def AWS_ARCHIVE_LIST = "archive_list.txt"
 
 def WORK_DIR_DEPLOY_TOOLS = "forest-deploy/garoon/forest/deploy_forest_with_AWS_archive"
