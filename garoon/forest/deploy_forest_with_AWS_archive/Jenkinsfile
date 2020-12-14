@@ -77,6 +77,7 @@ try {
                         sh "ls -l"
                         archiveFilePath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
                         echo "archiveFilePath: ${archiveFilePath}"
+                        source "deploy_variable.conf"
                         //sh "sh -x get_archive.sh ${BRANCH} -GRF"
                         //sh "ls -l"
                         //sh "source deploy_variable.conf"
