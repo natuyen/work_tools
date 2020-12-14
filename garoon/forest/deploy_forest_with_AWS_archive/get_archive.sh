@@ -18,7 +18,7 @@ ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws
 ARCHIVE_LIST=archive_list.txt
 curl -o ${ARCHIVE_LIST} "${ARCHIVE_FOLDER_LASTEST_URL}"
 ARCHIVE_GAROON=
-archives=($(grep -oP '(?<=Key>)[^<]+' "${ARCHIVE_LIST}"))
+archives=($(grep -oP '(?<=Key>)[^<]+' "${ARCHIVE_LIST}" | grep 'garoon-GRF'))
 for i in ${!archives[*]}
 do
    ARCHIVE_GAROON="${archives[$i]}"
