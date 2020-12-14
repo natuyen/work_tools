@@ -76,6 +76,7 @@ try {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
                         sh "sh -x get_archive.sh ${BRANCH} -GRF"
+                        sh "ls -l"
                         sh "source deploy_variable.txt"
                         sh "echo ${ARCHIVE_GAROON}"
                     }
