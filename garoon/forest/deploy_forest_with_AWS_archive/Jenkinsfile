@@ -73,7 +73,6 @@ try {
                         echo "GAROON_ARCHIVE_PATH: ${GAROON_ARCHIVE_PATH}"
                         GAROON_ARCHIVE = sh(returnStdout: true, script: "basename '${GAROON_ARCHIVE_PATH}'").trim()
                         echo "GAROON_ARCHIVE: ${GAROON_ARCHIVE}"
-                        echo "AWS_URL: ${AWS_URL}"
 
                         sh "curl -o ${GAROON_ARCHIVE} ${AWS_URL}/${GAROON_ARCHIVE_PATH}"
                         stash name: "garoon archive", includes: "${GAROON_ARCHIVE}"
