@@ -80,6 +80,7 @@ try {
                     }
                 }
             }
+            currentBuild.description = "archive: ${GAROON_ARCHIVE_PATH}"
         }
 
         stage('Destroy & Re-deploy serviceset') {
@@ -94,7 +95,7 @@ try {
                      sh "rm -f ${ARCHIVE_FOLDER_BUILD}/garoon-GRF*.tgz"
 
                      //
-                    unstash name: "garoon archive"
+                     unstash name: "garoon archive"
                      sh "mv ${GAROON_ARCHIVE} ${ARCHIVE_FOLDER_BUILD}"
                      sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
 
@@ -124,7 +125,7 @@ try {
             [NODE_LINUX, NODE_DEVMGR].each {
                 machine_builders[it] = {
                     node(it) {
-                        //sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
+                        sh "rm -rf ${env.WORKSPACE}/${env.BUILD_ID}"
                     }
                 }
             }
