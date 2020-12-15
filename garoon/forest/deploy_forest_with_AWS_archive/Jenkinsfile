@@ -39,7 +39,7 @@ echo "TOOL_BRANCH:${TOOL_BRANCH}"
 
 try {
     timeout(time: 60, unit: 'MINUTES') {
-        stage('Prepare archive') {
+        stage('Get archive') {
             environment{
 
             }
@@ -83,7 +83,7 @@ try {
             currentBuild.description = "archive: ${GAROON_ARCHIVE_PATH}"
         }
 
-        stage('Destroy & Re-deploy serviceset') {
+        stage('Destroy & Redeploy serviceset') {
             node(NODE_DEVMGR){
                  WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
 
