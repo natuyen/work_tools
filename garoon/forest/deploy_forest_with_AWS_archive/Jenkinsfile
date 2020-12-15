@@ -40,6 +40,9 @@ echo "TOOL_BRANCH:${TOOL_BRANCH}"
 try {
     timeout(time: 60, unit: 'MINUTES') {
         stage('Prepare archive') {
+            environment{
+
+            }
             node(NODE_LINUX) {
                 WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
                 def archiveGaroonUrl
