@@ -3,16 +3,18 @@ BRANCH=$1
 
 # get lastest folder
 if [ "${ARCHIVE_FOLDER}" == "" ]; then
-  ARCHIVE_FOLDER_LIST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=archives%2F${BRANCH}%2F"
-  ARCHIVE_FOLDER_LIST=archive_folder_list.txt
-  curl -o ${ARCHIVE_FOLDER_LIST} "${ARCHIVE_FOLDER_LIST_URL}"
-  ARCHIVE_FOLDER_LASTEST=
-  archives=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST}"))
-  for i in ${!archives[*]}
-  do
-     ARCHIVE_FOLDER_LASTEST="${archives[$i]}"
-  done
-  #echo "${ARCHIVE_FOLDER_LASTEST}"
+    ARCHIVE_FOLDER_LIST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=archives%2F${BRANCH}%2F"
+    ARCHIVE_FOLDER_LIST=archive_folder_list.txt
+    curl -o ${ARCHIVE_FOLDER_LIST} "${ARCHIVE_FOLDER_LIST_URL}"
+    ARCHIVE_FOLDER_LASTEST=
+    archives=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST}"))
+    for i in ${!archives[*]}
+    do
+       ARCHIVE_FOLDER_LASTEST="${archives[$i]}"
+    done
+#echo "${ARCHIVE_FOLDER_LASTEST}"
+else
+    ARCHIVE_FOLDER_LASTEST=${ARCHIVE_FOLDER}
 fi
 
 # get archive garoon
