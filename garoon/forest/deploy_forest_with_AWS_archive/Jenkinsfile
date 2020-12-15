@@ -7,6 +7,7 @@ def BRANCH = "${BRANCH}"
 def ARCHIVE_FOLDER = "${ARCHIVE_FOLDER}"
 //def GAROON_ARCHIVE = "${GAROON_ARCHIVE}"
 def GAROON_ARCHIVE
+def GAROON_ARCHIVE_PATH
 def IS_UPGRADE_SS = IS_UPGRADE_SERVICESET.toBoolean();
 
 //
@@ -66,13 +67,13 @@ try {
                     dir(WORK_DIR_DEPLOY_TOOLS) {
                         //sh "curl -o ${BRANCH}"
                         sh "ls -l"
-                        archiveGaroonPath = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
-                        echo "archiveGaroonPath: ${archiveGaroonPath}"
+                        GAROON_ARCHIVE_PATH = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
+                        echo "GAROON_ARCHIVE_PATH: ${GAROON_ARCHIVE_PATH}"
                         GAROON_ARCHIVE = sh(returnStdout: true, script: "basename '${archiveGaroonPath}'").trim()
-                        echo "archiveGaroonName: ${GAROON_ARCHIVE}"
+                        echo "GAROON_ARCHIVE: ${GAROON_ARCHIVE}"
 
-                        sh "curl -o ${archiveGaroonName} ${AWS_URL}/${archiveGaroonPath}"
-                        stash name: "garoon archive", includes: "${archiveGaroonName}"
+                        sh "curl -o ${GAROON_ARCHIVE} ${AWS_URL}/${GAROON_ARCHIVE_PATH}"
+                        stash name: "garoon archive", includes: "${GAROON_ARCHIVE}"
                     }
 
 
