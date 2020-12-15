@@ -69,7 +69,7 @@ try {
                         sh "ls -l"
                         GAROON_ARCHIVE_PATH = sh(returnStdout: true, script: "sh get_archive.sh ${BRANCH} -GRF").trim()
                         echo "GAROON_ARCHIVE_PATH: ${GAROON_ARCHIVE_PATH}"
-                        GAROON_ARCHIVE = sh(returnStdout: true, script: "basename '${archiveGaroonPath}'").trim()
+                        GAROON_ARCHIVE = sh(returnStdout: true, script: "basename '${GAROON_ARCHIVE_PATH}'").trim()
                         echo "GAROON_ARCHIVE: ${GAROON_ARCHIVE}"
 
                         sh "curl -o ${GAROON_ARCHIVE} ${AWS_URL}/${GAROON_ARCHIVE_PATH}"
