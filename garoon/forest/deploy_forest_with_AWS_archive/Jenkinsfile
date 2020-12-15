@@ -38,17 +38,6 @@ echo "TOOL_BRANCH:${TOOL_BRANCH}"
 try {
     timeout(time: 60, unit: 'MINUTES') {
         stage('Prepare archive') {
-
-            //node(NODE_DEVMGR) {
-            //    WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
-            //    dir(WORK_DIR_NODE_DEVMGR) {
-                    // sh "curl -o ${GAROON_ARCHIVE} ${AWS_ARCHIVE_FOLDER}/${BRANCH}/${ARCHIVE_FOLDER}/${GAROON_ARCHIVE}"
-            //        sh "curl -o archive_list.txt https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
-
-            //        stash name: "garoon archive", includes: GAROON_ARCHIVE
-            //    }
-            //}
-
             node(NODE_LINUX) {
                 WORK_DIR_NODE_LINUX = "${env.WORKSPACE}/${env.BUILD_ID}"
                 def archiveGaroonUrl
@@ -92,37 +81,37 @@ try {
             }
         }
 
-        // stage('Destroy & Re-deploy serviceset') {
-        //     node(NODE_DEVMGR){
-        //         WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
+        stage('Destroy & Re-deploy serviceset') {
+            node(NODE_DEVMGR){
+                 WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
 
-        //         dir(WORK_DIR_NODE_DEVMGR){
-        //             //
-        //             sh "rm -rf ${ARCHIVE_FOLDER_BUILD}"
-        //             sh "mkdir -p ${ARCHIVE_FOLDER_BUILD}"
-        //             sh "cp -r /home/qa/${CYDEC_VERSION}/* ${ARCHIVE_FOLDER_BUILD}"
-        //             sh "rm -f ${ARCHIVE_FOLDER_BUILD}/garoon-GRF*.tgz"
+                 dir(WORK_DIR_NODE_DEVMGR){
+                     //
+                     sh "rm -rf ${ARCHIVE_FOLDER_BUILD}"
+                     sh "mkdir -p ${ARCHIVE_FOLDER_BUILD}"
+                     sh "cp -r /home/qa/${CYDEC_VERSION}/* ${ARCHIVE_FOLDER_BUILD}"
+                     sh "rm -f ${ARCHIVE_FOLDER_BUILD}/garoon-GRF*.tgz"
 
-        //             //
-        //             unstash name: "garoon archive"
-        //             sh "mv ${GAROON_ARCHIVE} ${ARCHIVE_FOLDER_BUILD}"
-        //             sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
+                     //
+                    unstash name: "garoon archive"
+                     sh "mv ${GAROON_ARCHIVE} ${ARCHIVE_FOLDER_BUILD}"
+                     sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
 
-        //             if( IS_UPGRADE_SS ){
-        //                 sh "echo 'Update forest site with new archive'"
-        //                 sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
-        //                 sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
-        //             } else {
-        //                 withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-        //                     sh "echo 'Deploy new archive for forest site'"
-        //                     sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
-        //                     sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
-        //                     sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                     if( IS_UPGRADE_SS ){
+                         sh "echo 'Update forest site with new archive'"
+                         sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
+                         sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
+                     } else {
+                         withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
+                             sh "echo 'Deploy new archive for forest site'"
+                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
+                             sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
+                             sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/${GAROON_ARCHIVE}"
+                         }
+                     }
+                 }
+            }
+        }
     }
 } catch (err) {
     throw err
