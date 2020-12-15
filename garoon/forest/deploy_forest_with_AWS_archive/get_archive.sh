@@ -1,6 +1,5 @@
 #!/bin/bash
 BRANCH=$1
-echo "${ARCHIVE_FOLDER}:ARCHIVE_FOLDER"
 ARCHIVE_FOLDER_LASTEST=
 # get lastest folder
 if [ "${ARCHIVE_FOLDER}" == "" ]; then
