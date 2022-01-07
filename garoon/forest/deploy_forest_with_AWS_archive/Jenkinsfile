@@ -100,14 +100,16 @@ try {
 
                      if( IS_UPGRADE_SS ){
                          sh "echo 'Update forest site with new archive'"
-                         sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
                          sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
+                         sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
+                         
                      } else {
                          withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                              sh "echo 'Destroy & Deploy new archive for forest site'"
+                             sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
                              sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
                              sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
-                             sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
+                            
                          }
                      }
                  }
