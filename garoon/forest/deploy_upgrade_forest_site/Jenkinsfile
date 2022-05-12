@@ -58,25 +58,25 @@ def download_archive(branch, buildNumber, pattern){
             }
             
 
-            // find on garoon4
+            // find on garoon
             if(archiveFilePath == ""){
-                sh "mkdir -p garoon4"
+                sh "mkdir -p garoon"
                 def mount_ret2 = sh(returnStdout: true, script: '''#!/bin/bash
-                                if ! mountpoint -q "garoon4"; then
-                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon4 garoon4/ -o guest
+                                if ! mountpoint -q "garoon"; then
+                                    mount -r -t cifs //file.dev.cybozu.co.jp/Share/ARCHIVE/RC/garoon garoon/ -o guest
                                 fi
                             '''.stripIndent())
 
                 if (buildNumber == ''){
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }
                 else {
-                    archiveFilePath = sh(returnStdout: true, script: "find garoon4/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
+                    archiveFilePath = sh(returnStdout: true, script: "find garoon/${branch}/*_${buildNumber}/ -type f -name '${pattern}' | sort -r | head -1").trim()
                 }                
                 echo "archiveFilePath: ${archiveFilePath}"
                 if(archiveFilePath != ""){
                     sh "cp -rf ${archiveFilePath} ."
-                    sh "umount garoon4"
+                    sh "umount garoon"
                 }
             }
             else // on garoon
