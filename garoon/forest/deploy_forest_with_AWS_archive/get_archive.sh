@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 BRANCH=$1
 # get lastest folder
 if [ "${ARCHIVE_FOLDER}" == "" ]; then
