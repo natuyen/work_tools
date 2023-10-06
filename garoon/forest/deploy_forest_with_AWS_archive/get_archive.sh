@@ -1,18 +1,35 @@
 #!/bin/bash -eu
 BRANCH=$1
-# get lastest folder
-if [ "${ARCHIVE_FOLDER}" == "" ]; then
-    ARCHIVE_FOLDER_LIST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=archives%2F${BRANCH}%2F"
-    ARCHIVE_FOLDER_LIST=archive_folder_list.txt
-    curl -o ${ARCHIVE_FOLDER_LIST} "${ARCHIVE_FOLDER_LIST_URL}"
-    archives=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST}"))
-    for i in ${!archives[*]}
-    do
-       ARCHIVE_FOLDER_LASTEST_PATH="${archives[$i]}"
-    done
-else
-    ARCHIVE_FOLDER_LASTEST_PATH=archives/${BRANCH}/${ARCHIVE_FOLDER}/
+AWS_URL="https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com";
+
+# read AWS archives url https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/index.html#archives/
+ARCHIVE_FOLDER_LIST_URL="${AWS_URL}/?list-type=2&delimiter=%2F&prefix=archives%2F${BRANCH}%2F"
+ARCHIVE_FOLDER_LIST=archive_folder_list.txt
+curl -o ${ARCHIVE_FOLDER_LIST} "${ARCHIVE_FOLDER_LIST_URL}"
+
+# get KeyCount
+keycount=($(grep -oP '(?<=KeyCount>)[^<]+' "${ARCHIVE_FOLDER_LIST}"))
+# KeyCount = 0 : no archive in AWS branch, ex: index.html#archives/F23.5 no exist
+# use index.html#latest-archives/${BRANCH}/
+if [ $keycount -eq 0 ]; then
+    ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#latest-archives/${BRANCH}/"
+else # use index.html#archives/ url
+    # get laster archive folder
+    if [ "${ARCHIVE_FOLDER}" == "" ]; then
+        archives_build_array=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST}"))
+        archive_build_date=${archives_build_array[-1]}
+        ARCHIVE_FOLDER_LASTEST_PATH="{AWS_URL}/index.html#archives/${BRANCH}/${archive_build_date}"
+#        for i in ${!archives_build_array[*]}
+#        do
+#            archive_build_date=${archives_build_array[$i]}
+#            ARCHIVE_FOLDER_LASTEST_PATH="{AWS_URL}/index.html#archives/${BRANCH}/${archive_build_date}"
+#        done
+    else # get specific archive folder
+        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#archives/${BRANCH}/${ARCHIVE_FOLDER}/"
+    fi
 fi
+
+echo $ARCHIVE_FOLDER_LASTEST_PATH
 
 # get archive garoon
 ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=${ARCHIVE_FOLDER_LASTEST_PATH}"
