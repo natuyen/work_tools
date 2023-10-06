@@ -18,7 +18,7 @@ else # use index.html#archives/ url
     if [ "${ARCHIVE_FOLDER}" == "" ]; then
         archives_folder_list=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST_XML}"))
         archives_folder_latest=${archives_folder_list[-1]}
-        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#archives/${BRANCH}/${archives_folder_latest}"
+        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#${archives_folder_latest}"
 #        for i in ${!archives_build_array[*]}
 #        do
 #            archive_build_date=${archives_build_array[$i]}
