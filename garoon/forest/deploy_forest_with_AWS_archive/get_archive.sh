@@ -29,8 +29,6 @@ else # use index.html#archives/ url
     fi
 fi
 
-echo ARCHIVE_FOLDER_LASTEST_PATH: "$ARCHIVE_FOLDER_LASTEST_PATH"
-
 # get archive garoon
 #ARCHIVE_FOLDER_LASTEST_URL="https://cybozu-garoon-ci.s3.ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix=${ARCHIVE_FOLDER_LASTEST_PATH}"
 ARCHIVE_LIST=archive_list.txt
