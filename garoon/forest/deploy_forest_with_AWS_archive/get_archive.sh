@@ -1,9 +1,9 @@
 #!/bin/bash -eu
 BRANCH=$1
-AWS_URL="https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com"
+AWS_URL="https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/?list-type=2&delimiter=%2F&prefix="
 
-# read AWS archives url https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/index.html#archives/
-ARCHIVE_FOLDER_LIST_URL="${AWS_URL}/?list-type=2&delimiter=%2F&prefix=archives%2F${BRANCH}%2F"
+# read AWS "archives" url https://cybozu-garoon-ci.s3-ap-northeast-1.amazonaws.com/index.html#archives/
+ARCHIVE_FOLDER_LIST_URL="${AWS_URL}archives%2F${BRANCH}%2F"
 ARCHIVE_FOLDER_LIST_XML=archive_folder_list_xml.txt
 curl -o ${ARCHIVE_FOLDER_LIST_XML} "${ARCHIVE_FOLDER_LIST_URL}"
 
@@ -12,20 +12,20 @@ keycount=($(grep -oP '(?<=KeyCount>)[^<]+' "${ARCHIVE_FOLDER_LIST_XML}"))
 # KeyCount = 0 : no archive in AWS branch, ex: index.html#archives/F23.5 no exist
 # use index.html#latest-archives/${BRANCH}/
 if [ $keycount -eq 0 ]; then
-    ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#latest-archives/${BRANCH}/"
+    ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}latest-archives/${BRANCH}/"
 else # use index.html#archives/ url
     # get laster archive folder
     if [ "${ARCHIVE_FOLDER}" == "" ]; then
         archives_folder_list=($(grep -oP '(?<=Prefix>)[^<]+' "${ARCHIVE_FOLDER_LIST_XML}"))
         archives_folder_latest=${archives_folder_list[-1]}
-        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#${archives_folder_latest}"
+        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}${archives_folder_latest}"
 #        for i in ${!archives_build_array[*]}
 #        do
 #            archive_build_date=${archives_build_array[$i]}
 #            ARCHIVE_FOLDER_LASTEST_PATH="{AWS_URL}/index.html#archives/${BRANCH}/${archive_build_date}"
 #        done
     else # get specific archive folder
-        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}/index.html#archives/${BRANCH}/${ARCHIVE_FOLDER}/"
+        ARCHIVE_FOLDER_LASTEST_PATH="${AWS_URL}archives/${BRANCH}/${ARCHIVE_FOLDER}/"
     fi
 fi
 
