@@ -82,7 +82,7 @@ try {
             currentBuild.description = "archive: ${GAROON_ARCHIVE_PATH}"
         }
 
-        stage('Destroy & Redeploy serviceset') {
+        stage('Destroy & Deploy new OR Upgrade serviceset') {
             node(NODE_DEVMGR){
                  WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
 
