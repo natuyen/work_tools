@@ -82,7 +82,16 @@ try {
                     }
                 }
             }
-            currentBuild.description = "archive: ${GAROON_ARCHIVE_PATH}"
+
+            // set description
+            if( IS_UPGRADE_SS ){
+                description = "Update forest site with new archive"
+            }
+            else{
+                description = "Destroy & Re-Deploy new archive for forest site"
+            }
+            description += "\narchive: ${GAROON_ARCHIVE_PATH}"
+            currentBuild.description = "${description}""
         }
 
         stage('Destroy-ReDeploy OR Upgrade serviceset') {
