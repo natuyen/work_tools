@@ -84,13 +84,13 @@ try {
             }
 
             // set description
-            if( IS_UPGRADE_SS ){
-                description = "Update forest site with new archive"
-            }
-            else{
-                description = "Destroy & Re-Deploy new archive for forest site"
-            }
-            description += " ==> archive: ${GAROON_ARCHIVE_PATH}"
+            //if( IS_UPGRADE_SS ){
+              //  description = "Update forest site with new archive"
+            //}
+            //else{
+              //  description = "Destroy & Re-Deploy new archive for forest site"
+            //}
+            description = "Archive: ${GAROON_ARCHIVE_PATH}"
             currentBuild.description = "${description}"
         }
 
@@ -112,7 +112,7 @@ try {
 
                      if( IS_UPGRADE_SS ){
                          description = "Update forest site with new archive"
-                         currentBuild.description = "${description}\n" + currentBuild.description
+                         currentBuild.description = "${description} ===> " + currentBuild.description
                          sh "echo '${description}'"
                          sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
                          sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
@@ -120,7 +120,7 @@ try {
                      } else {
                          withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
                              description = "Destroy & Re-Deploy new archive for forest site"
-                             currentBuild.description = "${description}\n" + currentBuild.description
+                             currentBuild.description = "${description} ===>" + currentBuild.description
                              sh "echo '${description}'"
                              sh "domaindb ss version ${SERVICESET_NAME} ${CYDEC_VERSION}"
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
