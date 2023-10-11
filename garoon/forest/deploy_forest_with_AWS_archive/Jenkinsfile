@@ -37,6 +37,9 @@ def TOOL_BRANCH = "${TOOL_BRANCH}"
 echo "GIT_BRANCH:${GIT_BRANCH}"
 echo "TOOL_BRANCH:${TOOL_BRANCH}"
 
+// description
+def description
+
 try {
     timeout(time: 60, unit: 'MINUTES') {
         stage('Get archive') {
@@ -99,13 +102,17 @@ try {
                      sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
 
                      if( IS_UPGRADE_SS ){
-                         sh "echo 'Update forest site with new archive'"
+                         description = "Update forest site with new archive"
+                         currentBuild.description = "${description}\n" + currentBuild.description
+                         sh "echo '${description}'"
                          sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
                          sh "cydecc ss update --force-maintenance -a Slash -a Garoon ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
                          
                      } else {
                          withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                             sh "echo 'Destroy & Re-Deploy new archive for forest site'"
+                             description = "Destroy & Re-Deploy new archive for forest site"
+                             currentBuild.description = "${description}\n" + currentBuild.description
+                             sh "echo '${description}'"
                              sh "domaindb ss version ${SERVICESET_NAME} ${CYDEC_VERSION}"
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
                              sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
