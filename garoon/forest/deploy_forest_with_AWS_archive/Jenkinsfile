@@ -90,7 +90,7 @@ try {
             else{
                 description = "Destroy & Re-Deploy new archive for forest site"
             }
-            description += "\narchive: ${GAROON_ARCHIVE_PATH}"
+            description += " ==> archive: ${GAROON_ARCHIVE_PATH}"
             currentBuild.description = "${description}"
         }
 
