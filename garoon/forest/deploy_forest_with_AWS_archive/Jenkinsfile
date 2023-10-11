@@ -82,7 +82,7 @@ try {
             currentBuild.description = "archive: ${GAROON_ARCHIVE_PATH}"
         }
 
-        stage('Destroy & Deploy new OR Upgrade serviceset') {
+        stage('Destroy-ReDeploy OR Upgrade serviceset') {
             node(NODE_DEVMGR){
                  WORK_DIR_NODE_DEVMGR = "${env.WORKSPACE}/${env.BUILD_ID}"
 
@@ -105,7 +105,8 @@ try {
                          
                      } else {
                          withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                             sh "echo 'Destroy & Deploy new archive for forest site'"
+                             sh "echo 'Destroy & Re-Deploy new archive for forest site'"
+                             sh "domaindb ss version ${SERVICESET_NAME} ${CYDEC_VERSION}"
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
                              sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
                              sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
