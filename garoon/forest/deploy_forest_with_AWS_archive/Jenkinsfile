@@ -91,7 +91,7 @@ try {
                 description = "Destroy & Re-Deploy new archive for forest site"
             }
             description += "\narchive: ${GAROON_ARCHIVE_PATH}"
-            currentBuild.description = "${description}""
+            currentBuild.description = "${description}"
         }
 
         stage('Destroy-ReDeploy OR Upgrade serviceset') {
