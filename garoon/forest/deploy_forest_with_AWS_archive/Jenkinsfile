@@ -101,6 +101,7 @@ try {
                  dir(WORK_DIR_NODE_DEVMGR){
                      // get current version of Forest site for Upgrade and overwirte CYDEC VERSION
                      CYDEC_VERSION = sh(returnStdout: true, script: "domaindb ss version ${SERVICESET_NAME}").trim()
+                    sh "echo 'Current CYDEC_VERSION: ${CYDEC_VERSION}'"
 
                      //
                      sh "rm -rf ${ARCHIVE_FOLDER_BUILD}"
