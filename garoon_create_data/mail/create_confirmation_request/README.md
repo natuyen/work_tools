@@ -3,11 +3,12 @@
 ## How to use
 - Copy tool to "cbgrn/code/command" folder 
 - cd "cbgrn" folder
-- Run: ./grn.cgi -Cq code/command/create_mail_confirmation.csp total_mail=1000 total_confirmation=1000
-<br/>
+- Run: 
+    - ./grn.cgi -Cq code/command/create_mail_confirmation.csp total_mail=1000 total_confirmation=1000
+
 - If no input params then
     - total_mail: default is 1000
-  - total_confirmation: default is 1000
+    - total_confirmation: default is 1000
 
 ## Output
 - Quantify of mail = quantify of user * total_mail * 4 
