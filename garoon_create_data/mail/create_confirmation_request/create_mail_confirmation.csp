@@ -1,0 +1,370 @@
+<?php
+
+declare(strict_types=1);
+
+require_once('message/table_utility.csp');
+require_once('fw/transaction.csp');
+
+enum MailAction: string
+{
+    const SEND = 'outbox';
+    const RECEIVE = 'inbox';
+    const RECEIVE_AND_READ = 'receive_read';
+    const REPLY_CONFIRM = 'reply';
+}
+
+$total_mail = $argv['total_mail'] ?? 1000;
+$total_confirmation = $argv['total_confirmation'] ?? 1000;
+
+define('MAX_INSERT_QUERY_ONCE', 10);
+define('MAX_TOTAL_EVERY_USER', 1000);
+
+
+// duyet user
+$uum = cb_lwc_uum();
+$uids = $uum->getUsersId();
+$users = $uum->getUsers();
+
+require_once('mail/utility.csp');
+$utility = GRN_Mail_Utility::getInstance();
+$folder_logic = $utility->getFolderLogic();
+
+// create personal folder
+foreach ($users as $user) {
+    $folder_logic->initSpecialFolders($user);
+}
+
+foreach ($users as $user) {
+    // correct data
+    createMailForUser($user, MailAction::SEND, $total_mail);
+    createMailForUser($user, MailAction::RECEIVE, $total_mail);
+    createMailForUser($user, MailAction::RECEIVE_AND_READ, $total_mail);
+    createMailForUser($user, MailAction::REPLY_CONFIRM, $total_mail);
+
+    // error data
+    createConfirmationRequest($user, [], $total_confirmation);
+    createConfirmationResponse($user, [], $total_confirmation);
+}
+
+function createParamForQuery($input)
+{
+    $format_inputs = [];
+    foreach ($input as $key => $value) {
+        if (is_string($value)) {
+            $value = addslashes($value);
+        }
+        $format_inputs[$key] = '\'' . $value . '\'';
+    }
+
+    $params = [];
+    $params['columns'] = implode(',', array_keys($format_inputs));
+    $params['values'] = implode(',', array_values($format_inputs));
+
+    return $params;
+}
+
+function createInsertQuery($table_name, $input)
+{
+    $params = createParamForQuery($input);
+    $query = sprintf('INSERT INTO %s(%s) VALUES (%s);', $table_name, $params['columns'], $params['values']);
+    $db = cb_get_app_db('mail');
+    $db->query($query);
+}
+
+function repeatArrayWithKeys(array $input, array $keys, $total = MAX_TOTAL_EVERY_USER)
+{
+    $repeats = [];
+    for ($i = 1; $i <= $total; $i++) {
+        $item = $input;
+        foreach ($keys as $key) {
+            $item[$key] = $item[$key] . '-' . $i;
+        }
+        $repeats[] = $item;
+    }
+
+    return $repeats;
+}
+
+function executeQuery($table_name, $input_repeats)
+{
+    $input_repeats_chunk = array_chunk($input_repeats, MAX_INSERT_QUERY_ONCE);
+    foreach ($input_repeats_chunk as $groups) {
+        executeQueryWithGroupParams($table_name, $groups);
+    }
+}
+
+function executeQueryWithGroupParams($table_name, $groups)
+{
+    $values = [];
+    $columns = '';
+    foreach ($groups as $group) {
+        $format_group = createParamForQuery($group);
+        $values[] = '(' . $format_group['values'] . ')';
+        $columns = $format_group['columns'];
+    }
+    $values_combine = implode(',', $values);
+    $query = sprintf('INSERT INTO %s(%s) VALUES %s;', $table_name, $columns, $values_combine);
+    $db = cb_get_app_db('mail');
+    $db->query($query);
+    CB_TransactionManager::getInstance()->commit();
+}
+
+function createConfirmationRequest(CB_User $user, array $mail_data = [], $total = MAX_TOTAL_EVERY_USER)
+{
+    // confirmation request
+    $table_name = 'tab_grn_mail_confirmationrequest';
+    $user_id = $user->getOID();
+
+    $mail_message_table = grn_get_personal_tablename_message(
+        $user_id,
+        'grn_mail_message'
+    );
+
+    $time_now = time();
+
+    $mail_id = null;
+    $col_subject = 'deleted-mail-confirmation-request' . $user->get('display_name');
+    if (count($mail_data) > 0) {
+        $mail_id = $mail_data['_id'];
+        $col_subject = 'Confirmation Request for ' . $mail_data['col_subject'];
+    }
+
+    $input = [
+        'col_from'      => sprintf('\'%s\'<%s@sustain.vn>', $user->get('display_name'), $user->get('foreign_key')),
+        'ref_mail'      => $mail_message_table,
+        'rid_mail'      => $mail_id ?? 1000 * 1000,
+        'col_send_ts'   => $time_now,
+        'col_subject'   => $col_subject,
+        'col_timestamp' => $time_now,
+        'col_user'      => $user_id
+    ];
+    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total);
+    executeQuery($table_name, $input_repeats);
+}
+
+function createConfirmationResponse(CB_User $user, array $mail_data = [], $total = MAX_TOTAL_EVERY_USER)
+{
+    // confirmation request
+    $table_name = 'tab_grn_mail_confirmationresponse';
+    $user_id = $user->getOID();
+
+    $mail_message_table = grn_get_personal_tablename_message(
+        $user_id,
+        'grn_mail_message'
+    );
+
+    $time_now = time();
+
+    $mail_id = null;
+    $col_subject = 'deleted-mail-confirmation-response' . $user->get('display_name');
+    if (count($mail_data) > 0) {
+        $mail_id = $mail_data['_id'];
+        $col_subject = 'Confirmation Response for ' . $mail_data['col_subject'];
+    }
+
+    $input = [
+        'col_final_recipient' => sprintf('%s@sustain.vn', $user->get('display_name')),
+        'col_from'            => sprintf(
+            '\'%s\'<%s@sustain.vn>',
+            $user->get('display_name'),
+            $user->get('foreign_key')
+        ),
+        'ref_mail'            => $mail_message_table,
+        'rid_mail'            => $mail_id ?? 1000 * 1000,
+        "col_org_message_id"  => "xxxxxxxxxxxxxxxxxxxxx",
+        'col_send_ts'         => $time_now,
+        'col_subject'         => $col_subject,
+        'col_timestamp'       => $time_now,
+        'col_user'            => $user_id
+    ];
+    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total);
+    executeQuery($table_name, $input_repeats);
+}
+
+function quote($input)
+{
+    if (is_string($input)) {
+        $input = addslashes($input);
+    }
+
+    return '\'' . $input . '\'';
+}
+
+function selectQuery(string $table_name, array $conditions = [], string $col_column = null)
+{
+    $format_conditions = [];
+    foreach ($conditions as $key => $condition) {
+        $format_conditions[] = $key . quote($condition);
+    }
+    $conditions_combine = implode(' and ', $format_conditions);
+    if (count($format_conditions) > 0) {
+        $query = sprintf('select * from %s where %s', $table_name, $conditions_combine);
+    } else {
+        $query = sprintf('select * from %s', $table_name);
+    }
+
+    $db = cb_get_app_db('mail');
+    $result = $db->query($query);
+    $outputs = [];
+    while ($row = $db->fetch_assoc($result)) {
+        if (isset($col_column)) {
+            $outputs[$row[$col_column]] = $row;
+        } else {
+            $outputs[] = $row;
+        }
+    }
+    $db->free_result($result);
+
+    return $outputs;
+}
+
+function getLastRecordId($table_name)
+{
+    $query = "SELECT MAX(_id) as max_id FROM $table_name";
+    $db = cb_get_app_db('mail');
+    $result = $db->query($query);
+    $row = $db->fetch_assoc($result);
+    $db->free_result($result);
+
+    return $row['max_id'];
+}
+
+/**
+ * @param CB_User $user
+ *
+ * @return void
+ */
+function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTAL_EVERY_USER)
+{
+    $user_id = $user->getOID();
+
+    $mail_message_table = grn_get_personal_tablename_message(
+        $user_id,
+        'tab_grn_mail_message'
+    );
+
+    $time_now = time();
+
+    // get folder
+    $conditions = ['col_user =' => $user_id];
+    $folders = selectQuery('tab_grn_mail_folder', $conditions, 'col_code');
+
+    $inbox_folder = $folders[MailAction::RECEIVE]['_id'];
+    $sent_folder = $folders[MailAction::SEND]['_id'];
+
+    $email = sprintf('%s@sustain.vn', $user->get('foreign_key'));
+    $email_with_name = sprintf(
+        '\'%s\'<%s@sustain.vn>',
+        $user->get('display_name'),
+        $user->get('foreign_key')
+    );
+    $data = sprintf('this is mail of %s', $user->get('display_name'));
+
+    $array_action = [];
+    if ($mail_action == MailAction::SEND) {
+        $subject = 'Mail Send-' . $user->get('display_name');
+        $array_action = [
+            'col_abstract_subject' => $subject,
+            'col_subject'          => $subject,
+            'col_folder'           => $sent_folder,
+            'col_sent'             => 1
+        ];
+    } elseif ($mail_action == MailAction::RECEIVE) {
+        $subject = 'Mail Receive-' . $user->get('display_name');
+        $array_action = [
+            'col_abstract_subject' => $subject,
+            'col_subject'          => $subject,
+            'col_folder'           => $inbox_folder,
+            'col_read_ts'          => 0,
+            "col_reserve_int1"     => 1,
+            'col_sent'             => 0
+        ];
+    } elseif ($mail_action == MailAction::RECEIVE_AND_READ) {
+        $subject = 'Mail Receive And Read-' . $user->get('display_name');
+        $array_action = [
+            'col_abstract_subject'             => $subject,
+            "col_confirmation_final_recipient" => null,
+            "col_confirmation_org_message_id"  => null,
+            "col_confirmation_status"          => "opened",
+            "col_content_type"                 => "text\/plain; charset=ISO-2022-JP",
+            'col_subject'                      => $subject,
+            'col_folder'                       => $inbox_folder,
+            'col_read_ts'                      => 0,
+            "col_reserve_int1"                 => 1,
+            'col_sent'                         => 0
+        ];
+    } else { // Reply
+        $subject = 'Mail Reply-' . $user->get('display_name');
+        $col_data = $subject
+                    . "\n This e-mail was opened in Thu, 21 Dec 2023 05:10:41 +0000.\r\nHowever, it does not guarantee that e-mail is read.";
+        $col_folder = $folders[MailAction::SEND]['_id'];
+        $array_action = [
+            "col_abstract_data"         => $col_data,
+            "col_abstract_subject"      => "Read Receipt for " . $subject,
+            "col_confirmation_response" => 1,
+            "col_confirmation_status"   => "sent-manual",
+            "col_data"                  => $col_data,
+            'col_subject'               => 'Read Receipt for ' . $subject,
+            'col_folder'                => $col_folder,
+            'col_sent'                  => 1
+        ];
+    }
+
+    $input = [
+        "col_abstract_data"        => $data,
+        "col_abstract_from"        => $email_with_name,
+        "col_abstract_from_email"  => "<$email>",
+        "col_abstract_from_name"   => $user->get('display_name'),
+        "col_abstract_subject"     => 'Mail-' . $user->get('display_name'),
+        "col_abstract_to"          => $email,
+        "col_abstract_to_email"    => $email,
+        "col_abstract_to_name"     => $email,
+        'col_confirmation_request' => 1,
+        'col_confirmation_to'      => $email_with_name,
+        'col_creator'              => $user_id,
+        'col_creator_foreign_key'  => $user->get('foreign_key'),
+        'col_creator_name'         => $user->get('display_name'),
+        'col_ctime'                => $time_now,
+        'col_data'                 => $data,
+        'col_folder'               => $inbox_folder,
+        'col_from'                 => $email_with_name,
+        'col_modifier'             => $user_id,
+        'col_modifier_foreign_key' => $user->get('foreign_key'),
+        'col_modifier_name'        => $user->get('display_name'),
+        'col_mtime'                => $time_now,
+        "col_read_ts"              => $time_now,
+        "col_status"               => "1",
+        'col_send_ts'              => $time_now,
+        'col_sent'                 => 1,
+        'col_subject'              => 'Mail-' . $user->get('display_name'),
+        'col_timestamp'            => $time_now,
+        'col_to'                   => $email,
+        'col_user'                 => $user_id
+
+    ];
+
+    // get current max id
+    $max_id = getLastRecordId($mail_message_table);
+
+    // insert mail
+    $input_final = array_merge($input, $array_action);
+    $input_repeats = repeatArrayWithKeys($input_final, ['col_subject', 'col_abstract_subject'], $total);
+    executeQuery($mail_message_table, $input_repeats);
+
+    // get id of mail newly created
+    $mail_createds = selectQuery($mail_message_table, ['_id > ' => $max_id], '_id');
+
+    // insert confirm request
+    if ($mail_action == MailAction::SEND || $mail_action == MailAction::RECEIVE) {
+        foreach ($mail_createds as $mail) {
+            createConfirmationRequest($user, $mail, 1);
+        }
+    }
+
+    // insert confirm response
+    if ($mail_action == MailAction::REPLY_CONFIRM) {
+        foreach ($mail_createds as $mail) {
+            createConfirmationResponse($user, $mail, 1);
+        }
+    }
+}
