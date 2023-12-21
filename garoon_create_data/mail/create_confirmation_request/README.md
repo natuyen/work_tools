@@ -2,6 +2,10 @@
 
 ## Overview
 - It is used to create huge data mail with confirmation request and confirmation response
+- It dump data in tables
+    - tab_grn_mail_message_pxx
+    - tab_grn_mail_confirmationrequest
+    - tab_grn_mail_confirmationresponse   
 
 ## How to use
 - Copy tool to "cbgrn/code/command" folder 
