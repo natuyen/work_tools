@@ -1,4 +1,7 @@
-# create_mail_confirmation.csp is used to create huge data mail with confirmation request and confirmation response
+# create_mail_confirmation.csp
+
+## Overview
+- It is used to create huge data mail with confirmation request and confirmation response
 
 ## How to use
 - Copy tool to "cbgrn/code/command" folder 
