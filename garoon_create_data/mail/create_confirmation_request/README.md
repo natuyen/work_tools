@@ -11,7 +11,7 @@
 - You can use the following csv files to create users and mail account.
     - https://github.dev.cybozu.co.jp/tuyen-nguyen/work_tools/blob/master/garoon_create_data/mail/user_1_100.csv 
     - https://github.dev.cybozu.co.jp/tuyen-nguyen/work_tools/blob/master/garoon_create_data/mail/email_1_100.csv
-- Copy tool to "cbgrn/cod can usee/command" folder 
+- Copy tool to "cbgrn/code/command" folder 
 - cd "cbgrn" folder
 - Run: 
     - ./grn.cgi -Cq code/command/create_mail_confirmation.csp total_mail=1000 total_confirmation=1000
