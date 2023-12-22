@@ -25,7 +25,7 @@ $opts = cb_cli_start(
     ]
 );
 
-$loop_number = $opts['max_count'] ?? 1;
+$loop_number = $opts['max_count'] ?? 1000;
 
 define('MAX_INSERT_QUERY_ONCE', 10);  // records
 define('MAX_TOTAL_EVERY_USER', 1000); // records
