@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+cb_require_role('CommandLine');
+require_once('grn/cli.csp');
+
 require_once('message/table_utility.csp');
 require_once('fw/transaction.csp');
 
@@ -13,8 +16,9 @@ enum MailAction: string
     const REPLY_CONFIRM = 'reply';
 }
 
-$total_mail = $argv['total_mail'] ?? 1000;
-$total_confirmation = $argv['total_confirmation'] ?? 1000;
+//$total_mail = $argv['total_mail'] ?? 100;
+//$total_confirmation = $argv['total_confirmation'] ?? 100;
+$loop_number = $argv['loop_number'] ?? 1000;
 
 define('MAX_INSERT_QUERY_ONCE', 10);  // records
 define('MAX_TOTAL_EVERY_USER', 1000); // records
@@ -29,22 +33,66 @@ require_once('mail/utility.csp');
 $utility = GRN_Mail_Utility::getInstance();
 $folder_logic = $utility->getFolderLogic();
 
+cb_cli_start();
+writeLog('Starting...');
+
+
 // create personal folder
 foreach ($users as $user) {
     $folder_logic->initSpecialFolders($user);
 }
 
-foreach ($users as $user) {
-    // correct data
-    createMailForUser($user, MailAction::SEND, $total_mail);
-    createMailForUser($user, MailAction::RECEIVE, $total_mail);
-    createMailForUser($user, MailAction::RECEIVE_AND_READ, $total_mail);
-    createMailForUser($user, MailAction::REPLY_CONFIRM, $total_mail);
+for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
+    writeLog(sprintf('Loop no %s', $loop_no));
+    foreach ($users as $user) {
+        // log
+        $user_id = $user->getOID();
+        $user_name = $user->get('foreign_key');
+        writeLog(sprintf('>>>Starting %s,user_id=%s...', $user_name, $user_id));
+        writeLog(sprintf('Starting create mail and confirmation...'));
 
-    // error data
-    createConfirmationRequest($user, [], $total_confirmation);
-    createConfirmationResponse($user, [], $total_confirmation);
+        // correct data
+        createMailForUser($user, MailAction::SEND, 1);
+        createMailForUser($user, MailAction::RECEIVE, 1);
+        // error data
+        createConfirmationRequest($user, [], 1);
+        createConfirmationResponse($user, [], 1);
+        // correct data
+        createMailForUser($user, MailAction::RECEIVE_AND_READ, 1);
+        createMailForUser($user, MailAction::REPLY_CONFIRM, 1);
+
+        // log
+        $table_mail_message = grn_get_personal_tablename_message(
+            $user_id,
+            'tab_grn_mail_message'
+        );
+        $total_mail_message = countTable($table_mail_message);
+
+        $total_confirm_request = countTable('tab_grn_mail_confirmationresponse');
+
+        $total_confirm_response = countTable('tab_grn_mail_confirmationresponse');
+
+        writeLog(sprintf('Total of %s', $table_mail_message), $total_mail_message);
+        writeLog('Total of tab_grn_mail_confirmationresponse', $total_confirm_request);
+        writeLog('Total of tab_grn_mail_confirmationresponse', $total_confirm_response);
+        writeLog(sprintf('End user_id=%s', $user_id));
+    }
 }
+writeLog('End.');
+cb_cli_end('End.');
+
+function writeLog($message, $number = 0)
+{
+    $time = date("Y-m-d G:i:s T");
+    if ($number > 0) {
+        $content = sprintf("%s: %s : %s\n", $time, $message, $number);
+    } else {
+        $content = sprintf("%s: %s\n", $time, $message);
+    }
+
+    echo($content);
+}
+
 
 function createParamForQuery($input)
 {
@@ -227,6 +275,17 @@ function getLastRecordId($table_name)
     $db->free_result($result);
 
     return $row['max_id'];
+}
+
+function countTable($table_name)
+{
+    $query = "SELECT count(_id) as total FROM $table_name";
+    $db = cb_get_app_db('mail');
+    $result = $db->query($query);
+    $row = $db->fetch_assoc($result);
+    $db->free_result($result);
+
+    return $row['total'];
 }
 
 /**
