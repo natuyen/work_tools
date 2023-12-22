@@ -28,6 +28,6 @@
     - 1000 redundant confirmation request
     - 1000 redundant confirmation response
 - In Garoon, we will have
-    - quantify of user * total_mail * 4 mails
-    - quantify of user * total_mail * 4 correct confirmation ( request + response )
-    - quantify of user * total_confirmation * 2 redundant confirmation ( request + response )
+    - quantify of user * total_mail * 4 mails = 400.000 mails
+    - quantify of user * total_mail * 4 correct confirmation ( request + response ) = 400.000 confirmation
+    - quantify of user * total_confirmation * 2 redundant confirmation ( request + response ) = 200.000 redundant confirmation
