@@ -16,8 +16,8 @@ enum MailAction: string
 $total_mail = $argv['total_mail'] ?? 1000;
 $total_confirmation = $argv['total_confirmation'] ?? 1000;
 
-define('MAX_INSERT_QUERY_ONCE', 10);
-define('MAX_TOTAL_EVERY_USER', 1000);
+define('MAX_INSERT_QUERY_ONCE', 10);  // records
+define('MAX_TOTAL_EVERY_USER', 1000); // records
 
 
 // duyet user
@@ -276,21 +276,21 @@ function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTA
             'col_subject'          => $subject,
             'col_folder'           => $inbox_folder,
             'col_read_ts'          => 0,
-            "col_reserve_int1"     => 1,
+            'col_reserve_int1'     => 1,
             'col_sent'             => 0
         ];
     } elseif ($mail_action == MailAction::RECEIVE_AND_READ) {
         $subject = 'Mail Receive And Read-' . $user->get('display_name');
         $array_action = [
             'col_abstract_subject'             => $subject,
-            "col_confirmation_final_recipient" => null,
-            "col_confirmation_org_message_id"  => null,
-            "col_confirmation_status"          => "opened",
-            "col_content_type"                 => "text\/plain; charset=ISO-2022-JP",
+            'col_confirmation_final_recipient' => null,
+            'col_confirmation_org_message_id'  => null,
+            'col_confirmation_status'          => "opened",
+            'col_message_id'                   => "0_99141300_1703210085.16013.cbgrn@localhost",
             'col_subject'                      => $subject,
             'col_folder'                       => $inbox_folder,
             'col_read_ts'                      => 0,
-            "col_reserve_int1"                 => 1,
+            'col_reserve_int1'                 => 1,
             'col_sent'                         => 0
         ];
     } else { // Reply
@@ -299,11 +299,11 @@ function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTA
                     . "\n This e-mail was opened in Thu, 21 Dec 2023 05:10:41 +0000.\r\nHowever, it does not guarantee that e-mail is read.";
         $col_folder = $folders[MailAction::SEND]['_id'];
         $array_action = [
-            "col_abstract_data"         => $col_data,
-            "col_abstract_subject"      => "Read Receipt for " . $subject,
-            "col_confirmation_response" => 1,
-            "col_confirmation_status"   => "sent-manual",
-            "col_data"                  => $col_data,
+            'col_abstract_data'         => $col_data,
+            'col_abstract_subject'      => "Read Receipt for " . $subject,
+            'col_confirmation_response' => 1,
+            'col_confirmation_status'   => "sent-manual",
+            'col_data'                  => $col_data,
             'col_subject'               => 'Read Receipt for ' . $subject,
             'col_folder'                => $col_folder,
             'col_sent'                  => 1
@@ -311,14 +311,14 @@ function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTA
     }
 
     $input = [
-        "col_abstract_data"        => $data,
-        "col_abstract_from"        => $email_with_name,
-        "col_abstract_from_email"  => "<$email>",
-        "col_abstract_from_name"   => $user->get('display_name'),
-        "col_abstract_subject"     => 'Mail-' . $user->get('display_name'),
-        "col_abstract_to"          => $email,
-        "col_abstract_to_email"    => $email,
-        "col_abstract_to_name"     => $email,
+        'col_abstract_data'        => $data,
+        'col_abstract_from'        => $email_with_name,
+        'col_abstract_from_email'  => "<$email>",
+        'col_abstract_from_name'   => $user->get('display_name'),
+        'col_abstract_subject'     => 'Mail-' . $user->get('display_name'),
+        'col_abstract_to'          => $email,
+        'col_abstract_to_email'    => $email,
+        'col_abstract_to_name'     => $email,
         'col_confirmation_request' => 1,
         'col_confirmation_to'      => $email_with_name,
         'col_creator'              => $user_id,
@@ -332,8 +332,8 @@ function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTA
         'col_modifier_foreign_key' => $user->get('foreign_key'),
         'col_modifier_name'        => $user->get('display_name'),
         'col_mtime'                => $time_now,
-        "col_read_ts"              => $time_now,
-        "col_status"               => "1",
+        'col_read_ts'              => $time_now,
+        'col_status'               => "1",
         'col_send_ts'              => $time_now,
         'col_sent'                 => 1,
         'col_subject'              => 'Mail-' . $user->get('display_name'),
