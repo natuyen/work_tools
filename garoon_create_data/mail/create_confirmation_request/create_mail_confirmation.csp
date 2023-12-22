@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 cb_require_role('CommandLine');
-require_once('grn/cli.csp');
 
 require_once('message/table_utility.csp');
 require_once('fw/transaction.csp');
@@ -16,13 +15,20 @@ enum MailAction: string
     const REPLY_CONFIRM = 'reply';
 }
 
-//$total_mail = $argv['total_mail'] ?? 100;
-//$total_confirmation = $argv['total_confirmation'] ?? 100;
-$loop_number = $argv['loop_number'] ?? 1000;
+require_once('grn/cli.csp');
+$opts = cb_cli_start(
+// Mandatory command-line options
+    [],
+    // Optional command-line options
+    [
+        new CB_CLI_MAX_COUNT_OPTION()
+    ]
+);
+
+$loop_number = $opts['max_count'] ?? 1;
 
 define('MAX_INSERT_QUERY_ONCE', 10);  // records
 define('MAX_TOTAL_EVERY_USER', 1000); // records
-
 
 // duyet user
 $uum = cb_lwc_uum();
@@ -33,9 +39,7 @@ require_once('mail/utility.csp');
 $utility = GRN_Mail_Utility::getInstance();
 $folder_logic = $utility->getFolderLogic();
 
-cb_cli_start();
 writeLog('Starting...');
-
 
 // create personal folder
 foreach ($users as $user) {
@@ -43,7 +47,7 @@ foreach ($users as $user) {
 }
 
 for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
-    writeLog(sprintf('Loop no %s', $loop_no));
+    writeLog(sprintf('Loop no %s...', $loop_no));
     foreach ($users as $user) {
         // log
         $user_id = $user->getOID();
@@ -77,6 +81,7 @@ for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
         writeLog('Total of tab_grn_mail_confirmationresponse', $total_confirm_response);
         writeLog(sprintf('End user_id=%s', $user_id));
     }
+    writeLog(sprintf('End Loop no %s', $loop_no));
 }
 writeLog('End.');
 cb_cli_end('End.');
@@ -92,7 +97,6 @@ function writeLog($message, $number = 0)
 
     echo($content);
 }
-
 
 function createParamForQuery($input)
 {
