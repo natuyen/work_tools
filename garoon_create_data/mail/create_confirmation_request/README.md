@@ -14,19 +14,19 @@
 - Copy tool to "cbgrn/code/command" folder 
 - cd "cbgrn" folder
 - Run: 
-    - ./grn.cgi -Cq code/command/create_mail_confirmation.csp total_mail=1000 total_confirmation=1000
+    - ./grn.cgi -Cq code/command/create_mail_confirmation.csp loop_number=1000
 
-- If no input params then
-    - <b>total_mail</b>: quantity of mail of every user, default is 1000
-    - <b>total_confirmation</b>: quantity of redudant confirmation request, response of every user, default is 1000
+- <b>loop_number</b>
+    - If no input param then default loop number is 1000
+    - Every loop will create
+        - 4 mail for every user
+        - 4 correct confimration request + confirmation response for every user
+        - 2 redundant confimration request + confirmation response for every user
 
 ## Example:
-- total_mail = 1000, every user will create
+- loop_number = 1000, every user will create
     - 4 * 1000 mail
-    - 4 * 1000 confirmation ( request + response )
-- total_confirmation = 1000
-    - 1000 redundant confirmation request
-    - 1000 redundant confirmation response
+    - 6 * 1000 confirmation ( request + response )
 - In Garoon, we will have
     - quantify of user * total_mail * 4 mails = 400.000 mails
     - quantify of user * total_mail * 4 correct confirmation ( request + response ) = 400.000 confirmation
