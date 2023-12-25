@@ -27,8 +27,9 @@ $opts = cb_cli_start(
 
 $loop_number = $opts['max_count'] ?? 1000;
 
-define('MAX_INSERT_QUERY_ONCE', 10);  // records
+define('MAX_INSERT_QUERY_ONCE', 2);  // records
 define('MAX_TOTAL_EVERY_USER', 1000); // records
+define('INVALID_MAIL_ID', 20 * 1000 * 1000); // records
 
 // duyet user
 $uum = cb_lwc_uum();
@@ -46,7 +47,10 @@ foreach ($users as $user) {
     $folder_logic->initSpecialFolders($user);
 }
 
-for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
+$loop_run = $loop_number / MAX_INSERT_QUERY_ONCE;
+$begin_number = 1;
+for ($loop_no = 1; $loop_no <= $loop_run; $loop_no++) {
+    $begin_number = MAX_INSERT_QUERY_ONCE * ($loop_no - 1) + 1;
     writeLog(sprintf('Loop no %s...', $loop_no));
     foreach ($users as $user) {
         // log
@@ -56,14 +60,14 @@ for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
         writeLog(sprintf('Starting create mail and confirmation...'));
 
         // correct data
-        createMailForUser($user, MailAction::SEND, 1);
-        createMailForUser($user, MailAction::RECEIVE, 1);
+        createMailForUser($user, MailAction::SEND, 2, $begin_number);
+        createMailForUser($user, MailAction::RECEIVE, 2, $begin_number);
         // error data
-        createConfirmationRequest($user, [], 1);
-        createConfirmationResponse($user, [], 1);
+        createConfirmationRequest($user, [], 2, $begin_number);
+        createConfirmationResponse($user, [], 2, $begin_number);
         // correct data
-        createMailForUser($user, MailAction::RECEIVE_AND_READ, 1);
-        createMailForUser($user, MailAction::REPLY_CONFIRM, 1);
+        createMailForUser($user, MailAction::RECEIVE_AND_READ, 2, $begin_number);
+        createMailForUser($user, MailAction::REPLY_CONFIRM, 2, $begin_number);
 
         // log
         $table_mail_message = grn_get_personal_tablename_message(
@@ -82,6 +86,7 @@ for ($loop_no = 1; $loop_no <= $loop_number; $loop_no++) {
         writeLog(sprintf('End user_id=%s', $user_id));
     }
     writeLog(sprintf('End Loop no %s', $loop_no));
+    usleep(300000);
 }
 writeLog('End.');
 cb_cli_end('End.');
@@ -123,15 +128,21 @@ function createInsertQuery($table_name, $input)
     $db->query($query);
 }
 
-function repeatArrayWithKeys(array $input, array $keys, $total = MAX_TOTAL_EVERY_USER)
+function repeatArrayWithKeys(array $input, array $keys, $total = MAX_TOTAL_EVERY_USER, $begin_number = 0)
 {
+    $order_number = $begin_number;
     $repeats = [];
     for ($i = 1; $i <= $total; $i++) {
         $item = $input;
         foreach ($keys as $key) {
-            $item[$key] = $item[$key] . '-' . $i;
+            if ($begin_number > 0) {
+                $item[$key] = $item[$key] . '-' . $order_number;
+            }
         }
         $repeats[] = $item;
+
+        //
+        $order_number++;
     }
 
     return $repeats;
@@ -161,8 +172,12 @@ function executeQueryWithGroupParams($table_name, $groups)
     CB_TransactionManager::getInstance()->commit();
 }
 
-function createConfirmationRequest(CB_User $user, array $mail_data = [], $total = MAX_TOTAL_EVERY_USER)
-{
+function createConfirmationRequest(
+    CB_User $user,
+    array $mail_data = [],
+    $total = MAX_TOTAL_EVERY_USER,
+    $begin_number = 0
+) {
     // confirmation request
     $table_name = 'tab_grn_mail_confirmationrequest';
     $user_id = $user->getOID();
@@ -175,7 +190,7 @@ function createConfirmationRequest(CB_User $user, array $mail_data = [], $total 
     $time_now = time();
 
     $mail_id = null;
-    $col_subject = 'deleted-mail-confirmation-request' . $user->get('display_name');
+    $col_subject = 'deleted-mail-confirmation-request-' . $user->get('display_name');
     if (count($mail_data) > 0) {
         $mail_id = $mail_data['_id'];
         $col_subject = 'Confirmation Request for ' . $mail_data['col_subject'];
@@ -184,18 +199,22 @@ function createConfirmationRequest(CB_User $user, array $mail_data = [], $total 
     $input = [
         'col_from'      => sprintf('\'%s\'<%s@sustain.vn>', $user->get('display_name'), $user->get('foreign_key')),
         'ref_mail'      => $mail_message_table,
-        'rid_mail'      => $mail_id ?? 1000 * 1000,
+        'rid_mail'      => $mail_id ?? INVALID_MAIL_ID,
         'col_send_ts'   => $time_now,
         'col_subject'   => $col_subject,
         'col_timestamp' => $time_now,
         'col_user'      => $user_id
     ];
-    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total);
+    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total, $begin_number);
     executeQuery($table_name, $input_repeats);
 }
 
-function createConfirmationResponse(CB_User $user, array $mail_data = [], $total = MAX_TOTAL_EVERY_USER)
-{
+function createConfirmationResponse(
+    CB_User $user,
+    array $mail_data = [],
+    $total = MAX_TOTAL_EVERY_USER,
+    $begin_number = 0
+) {
     // confirmation request
     $table_name = 'tab_grn_mail_confirmationresponse';
     $user_id = $user->getOID();
@@ -208,7 +227,7 @@ function createConfirmationResponse(CB_User $user, array $mail_data = [], $total
     $time_now = time();
 
     $mail_id = null;
-    $col_subject = 'deleted-mail-confirmation-response' . $user->get('display_name');
+    $col_subject = 'deleted-mail-confirmation-response-' . $user->get('display_name');
     if (count($mail_data) > 0) {
         $mail_id = $mail_data['_id'];
         $col_subject = 'Confirmation Response for ' . $mail_data['col_subject'];
@@ -222,14 +241,14 @@ function createConfirmationResponse(CB_User $user, array $mail_data = [], $total
             $user->get('foreign_key')
         ),
         'ref_mail'            => $mail_message_table,
-        'rid_mail'            => $mail_id ?? 1000 * 1000,
+        'rid_mail'            => $mail_id ?? INVALID_MAIL_ID,
         "col_org_message_id"  => "xxxxxxxxxxxxxxxxxxxxx",
         'col_send_ts'         => $time_now,
         'col_subject'         => $col_subject,
         'col_timestamp'       => $time_now,
         'col_user'            => $user_id
     ];
-    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total);
+    $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total, $begin_number);
     executeQuery($table_name, $input_repeats);
 }
 
@@ -297,7 +316,7 @@ function countTable($table_name)
  *
  * @return void
  */
-function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTAL_EVERY_USER)
+function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTAL_EVERY_USER, $begin_number = 1)
 {
     $user_id = $user->getOID();
 
@@ -411,7 +430,7 @@ function createMailForUser(CB_User $user, string $mail_action, $total = MAX_TOTA
 
     // insert mail
     $input_final = array_merge($input, $array_action);
-    $input_repeats = repeatArrayWithKeys($input_final, ['col_subject', 'col_abstract_subject'], $total);
+    $input_repeats = repeatArrayWithKeys($input_final, ['col_subject', 'col_abstract_subject'], $total, $begin_number);
     executeQuery($mail_message_table, $input_repeats);
 
     // get id of mail newly created
