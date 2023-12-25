@@ -1,0 +1,85 @@
+<?php
+
+// This command dump 5 millions records into tab_grn_notification_notify
+
+cb_require_role('CommandLine');
+
+
+$db = cb_get_app_db('notification');
+function removeIndexTableNotification($table_name, $index_name)
+{
+    global $db;
+    // drop index key idx_unique_id_module_user, idx_user_module_unique_id in tab_grn_notification_notify table
+    //count
+    $query = cb_queryf(
+        $db,
+        "SELECT COUNT(*) AS index_count FROM information_schema.STATISTICS WHERE table_schema='cb_cbgrn' AND table_name= @X AND index_name = @X;",
+        //'tab_grn_notification_notify',
+        $table_name,
+        $index_name
+    );
+    // delete
+    $ret = $db->query($query);
+    $row = $db->fetch_assoc($ret);
+    $db->free_result($ret);
+    if ($row['index_count'] > 0) {
+        $query = "DROP INDEX $index_name ON $table_name";
+        $db->query($query);
+    }
+}
+
+
+// insert notification in tab_grn_notification_notify
+// once 3 million records
+$quantity = 1000000 * 5;
+$quantity_once = 20;
+
+$insert_value = "('Cybozu Information','notify_cybozu20','grn.common.license')";
+for ($i = 1; $i < $quantity_once; $i++) {
+    $insert_value .= ",('Cybozu Information','notify_cybozu20','grn.common.license')";
+}
+
+// for Normal
+if (grn_check_table_merged()) {
+    removeIndexTableNotification('tab_grn_notification_notify', 'idx_unique_id_module_user');
+    removeIndexTableNotification('tab_grn_notification_notify', 'idx_user_module_unique_id');
+
+    $quantity_loop = $quantity / $quantity_once;
+    $query = 'INSERT INTO tab_grn_notification_notify(col_module_id, col_subject_icon, col_unique_id) VALUES '
+             . $insert_value;
+    for ($i = 1; $i <= $quantity_loop; $i++) {
+        $db->query($query);
+        $count_quantity = $i * $quantity_once;
+        CB_TransactionManager::getInstance()->commit();
+        echo('Count:' . $count_quantity . " records\n");
+    }
+} else { // for Largescale
+    $user_tables = cb_get_user_tables();
+    $prefix_table = CB_PERSISTENT_NAMESEPARATOR . CB_DATABASE_USER_TABLE_PREFIX;
+    $notify_table = 'tab_grn_notification_notify';
+
+    $quantity_loop = $quantity / ($quantity_once * $user_tables);
+
+    $count_quantity = 0;
+    for ($i = 0; $i < $user_tables; $i++) {
+        $prefix_user_table = $prefix_table . $i;
+        $notify_table_full_name = $notify_table . $prefix_user_table;
+        echo("\n----------------------$notify_table_full_name--------------------------------\n");
+        sleep(1);
+        removeIndexTableNotification($notify_table_full_name, 'idx_unique_id_module_user');
+        removeIndexTableNotification($notify_table_full_name, 'idx_user_module_unique_id');
+
+        $query = "INSERT INTO ${notify_table_full_name}(col_module_id, col_subject_icon, col_unique_id) VALUES "
+                 . $insert_value;
+        for ($j = 1; $j <= $quantity_loop; $j++) {
+            $db->query($query);
+            $count_quantity += $quantity_once;
+            CB_TransactionManager::getInstance()->commit();
+            echo('Count:' . $count_quantity . " records\n");
+        }
+    }
+}
+
+
+echo('End.');
+
