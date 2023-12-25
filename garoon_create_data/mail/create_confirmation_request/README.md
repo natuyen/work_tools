@@ -17,16 +17,16 @@
     - ./grn.cgi -Cq code/command/create_mail_confirmation.csp max_count=1000
 
 - <b>max_count</b>
-    - If no input param then default loop number is 1000
+    - If no input param then default max_count is 1000
     - Every loop will create
         - 4 mail for every user
-        - 4 correct confimration request + confirmation response for every user
-        - 2 redundant confimration request + confirmation response for every user
+        - 4 correct confimration (request + response) for every user
+        - 2 redundant confimration (request + response) for every user
 
 ## Example:
 - max_count = 1000, every user will create
     - 4 mail * 1000 times
-    - 6 confirmation * 1000 times ( request + response )
+    - 6 confirmation ( request + response ) * 1000 times 
 - In Garoon, we will have
     - quantify of user * max_count * 4 mails = 400.000 mails
     - quantify of user * max_count * 4 correct confirmation ( request + response ) = 400.000 confirmation
