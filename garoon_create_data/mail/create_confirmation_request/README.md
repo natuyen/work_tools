@@ -25,9 +25,9 @@
 
 ## Example:
 - max_count = 1000, every user will create
-    - 4 * 1000 mail
-    - 6 * 1000 confirmation ( request + response )
+    - 4 mail * 1000 times
+    - 6 confirmation * 1000 times ( request + response )
 - In Garoon, we will have
-    - quantify of user * total_mail * 4 mails = 400.000 mails
-    - quantify of user * total_mail * 4 correct confirmation ( request + response ) = 400.000 confirmation
-    - quantify of user * total_confirmation * 2 redundant confirmation ( request + response ) = 200.000 redundant confirmation
+    - quantify of user * max_count * 4 mails = 400.000 mails
+    - quantify of user * max_count * 4 correct confirmation ( request + response ) = 400.000 confirmation
+    - quantify of user * max_count * 2 redundant confirmation ( request + response ) = 200.000 redundant confirmation
