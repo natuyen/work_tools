@@ -65,7 +65,7 @@ for ($loop_no = 1; $loop_no <= $loop_run; $loop_no++) {
         }
 
         //
-        writeLog(sprintf('>>>Starting %s,user_id=%s...', $user_name, $user_id));
+        writeLog(sprintf('>>>Starting %s, user_id=%s...', $user_name, $user_id));
         writeLog(sprintf('Starting create mail and confirmation...'));
 
         // correct data
@@ -83,14 +83,15 @@ for ($loop_no = 1; $loop_no <= $loop_run; $loop_no++) {
             $user_id,
             'tab_grn_mail_message'
         );
+
         $total_mail_message = countTable($table_mail_message);
 
-        $total_confirm_request = countTable('tab_grn_mail_confirmationresponse');
+        $total_confirm_request = countTable('tab_grn_mail_confirmationrequest');
 
         $total_confirm_response = countTable('tab_grn_mail_confirmationresponse');
 
         writeLog(sprintf('Total of %s', $table_mail_message), $total_mail_message);
-        writeLog('Total of tab_grn_mail_confirmationresponse', $total_confirm_request);
+        writeLog('Total of tab_grn_mail_confirmationrequest', $total_confirm_request);
         writeLog('Total of tab_grn_mail_confirmationresponse', $total_confirm_response);
         writeLog(sprintf('End user_id=%s', $user_id));
     }
@@ -104,7 +105,7 @@ function writeLog($message, $number = 0)
 {
     $time = date("Y-m-d G:i:s T");
     if ($number > 0) {
-        $content = sprintf("%s: %s : %s\n", $time, $message, $number);
+        $content = sprintf("%s: %s : %s records.\n", $time, $message, number_format((int)$number));
     } else {
         $content = sprintf("%s: %s\n", $time, $message);
     }
