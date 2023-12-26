@@ -56,6 +56,15 @@ for ($loop_no = 1; $loop_no <= $loop_run; $loop_no++) {
         // log
         $user_id = $user->getOID();
         $user_name = $user->get('foreign_key');
+
+        // check exist mail account
+        $conditions = ['col_user =' => $user_id];
+        $folders = selectQuery('tab_grn_mail_folder', $conditions, 'col_code');
+        if (count($folders) == 0) {
+            continue;
+        }
+
+        //
         writeLog(sprintf('>>>Starting %s,user_id=%s...', $user_name, $user_id));
         writeLog(sprintf('Starting create mail and confirmation...'));
 
