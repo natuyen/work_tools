@@ -14,7 +14,7 @@
 - Copy tool to "cbgrn/code/command" folder 
 - cd "cbgrn" folder
 - Run: 
-    - ./grn.cgi -Cq code/command/create_mail_confirmation.csp max_count=1000
+    - ./grn.cgi -Cq code/command/create_mail_confirmation.csp max_count=5
 
 - <b>max_count</b>
     - If no input param then default max_count is 1000
