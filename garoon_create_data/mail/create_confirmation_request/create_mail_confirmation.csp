@@ -25,7 +25,10 @@ $opts = cb_cli_start(
     ]
 );
 
-$loop_number = $opts['max_count'] ?? 1000;
+$loop_number = $opts['max_count'] ?? 10;
+if ($loop_number % 2 == 1) {
+    $loop_number++;
+}
 
 define('MAX_INSERT_QUERY_ONCE', 2);  // records
 define('MAX_TOTAL_EVERY_USER', 1000); // records
@@ -98,7 +101,7 @@ for ($loop_no = 1; $loop_no <= $loop_run; $loop_no++) {
     writeLog(sprintf('End Loop no %s', $loop_no));
     usleep(300000);
 }
-writeLog('End.');
+
 cb_cli_end('End.');
 
 function writeLog($message, $number = 0)
@@ -120,7 +123,12 @@ function createParamForQuery($input)
         if (is_string($value)) {
             $value = addslashes($value);
         }
-        $format_inputs[$key] = '\'' . $value . '\'';
+
+        if (is_null($value)) {
+            $format_inputs[$key] = 'null';
+        } else {
+            $format_inputs[$key] = '\'' . $value . '\'';
+        }
     }
 
     $params = [];
@@ -144,8 +152,8 @@ function repeatArrayWithKeys(array $input, array $keys, $total = MAX_TOTAL_EVERY
     $repeats = [];
     for ($i = 1; $i <= $total; $i++) {
         $item = $input;
-        foreach ($keys as $key) {
-            if ($begin_number > 0) {
+        if ($begin_number > 0) {
+            foreach ($keys as $key) {
                 $item[$key] = $item[$key] . '-' . $order_number;
             }
         }
@@ -177,9 +185,24 @@ function executeQueryWithGroupParams($table_name, $groups)
     }
     $values_combine = implode(',', $values);
     $query = sprintf('INSERT INTO %s(%s) VALUES %s;', $table_name, $columns, $values_combine);
+
     $db = cb_get_app_db('mail');
     $db->query($query);
     CB_TransactionManager::getInstance()->commit();
+}
+
+function createConfirmationNullValue(array $input, array $keys, array $titles)
+{
+    $output = $input;
+    foreach ($keys as $key) {
+        $output[$key] = null;
+    }
+
+    foreach ($titles as $title) {
+        $output[$title] = 'Deleted-Null-' . $output[$title];
+    }
+
+    return $output;
 }
 
 function createConfirmationRequest(
@@ -215,7 +238,15 @@ function createConfirmationRequest(
         'col_timestamp' => $time_now,
         'col_user'      => $user_id
     ];
+
     $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total, $begin_number);
+
+    // make null confirm
+    if (! $mail_id) {
+        $input_repeats[] = createConfirmationNullValue($input, ['ref_mail'], ['col_subject']);
+        $input_repeats[] = createConfirmationNullValue($input, ['rid_mail'], ['col_subject']);
+    }
+
     executeQuery($table_name, $input_repeats);
 }
 
@@ -259,6 +290,13 @@ function createConfirmationResponse(
         'col_user'            => $user_id
     ];
     $input_repeats = repeatArrayWithKeys($input, ['col_subject'], $total, $begin_number);
+
+    // make null confirm
+    if (! $mail_id) {
+        $input_repeats[] = createConfirmationNullValue($input, ['ref_mail'], ['col_subject']);
+        $input_repeats[] = createConfirmationNullValue($input, ['rid_mail'], ['col_subject']);
+    }
+
     executeQuery($table_name, $input_repeats);
 }
 
