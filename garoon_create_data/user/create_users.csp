@@ -1,0 +1,28 @@
+<?php
+
+cb_require_role('CommandLine');
+
+require_once('grn/cli.csp');
+
+cb_cli_start();
+
+$user_name = 'u';
+
+$begin_number = 1;
+$quantity = 50;
+
+//Administratorで実行（自動削除ロジック内でログインユーザーのIDを使用している箇所があるので、Administratorでログインしておく）
+global $G_container_base;
+$uum = $G_container_base->getInstance('uum');
+$admin = $uum->getUser(GRN_UUM_ADMINISTRATION_USER);
+$uum->loginAs($admin);
+
+$count = 0;
+for ($i = $begin_number; $i < $begin_number + $quantity; $i++) {
+    $user_name_value = "$user_name$i";
+    $user_info = ['display_name' => $user_name_value, 'foreign_key' => $user_name_value];
+    $uum->addUser($user_info);
+    $count++;
+}
+
+cb_cli_end("Finished $count records");

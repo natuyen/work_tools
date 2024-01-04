@@ -1,0 +1,41 @@
+<?php
+
+cb_require_role('CommandLine');
+
+require_once('grn/cli.csp');
+
+cb_cli_start();
+
+$category_id = 2;
+$begin_number = 2;
+$quantity = 10;
+
+
+//Administratorで実行（自動削除ロジック内でログインユーザーのIDを使用している箇所があるので、Administratorでログインしておく）
+global $G_container_base;
+$uum = $G_container_base->getInstance('uum');
+$admin = $uum->getUser(GRN_UUM_ADMINISTRATION_USER);
+$uum->loginAs($admin);
+
+require_once('grn/application.csp');
+$locator = GRN_ApplicationLocator::instance();
+$G_bulletin = $locator->getInstance('bulletin');
+
+$category = $G_bulletin->getCategory(
+    $admin,
+    $category_id
+);
+
+$count = 0;
+for ($i = $begin_number; $i < $begin_number + $quantity; $i++) {
+    $args = ['subject' => "Bulletin $i", 'can_follow' => 1];
+    $G_bulletin->sendArticle(
+        $admin,
+        $category,
+        $args,
+        null
+    );
+    $count++;
+}
+
+cb_cli_end("Finished $count records");

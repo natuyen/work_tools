@@ -1,0 +1,108 @@
+<?php
+
+use grn\favour\api_internal\shared\FavourParamsCreator;
+use grn\favour\data\bean\Favour;
+use grn\favour\service\FavourService;
+
+cb_require_role('CommandLine');
+
+require_once('grn/cli.csp');
+
+cb_cli_start();
+
+// topic
+$topic_id = 2;
+
+// user
+$begin_user_id = 12;
+$quantity_user = 35;
+
+//Administratorで実行（自動削除ロジック内でログインユーザーのIDを使用している箇所があるので、Administratorでログインしておく）
+$uum = cb_lwc_uum();
+//$admin = $uum->getUser(GRN_UUM_ADMINISTRATION_USER);
+//$uum->loginAs($admin);
+
+$service = new FavourService();
+
+// get old favour
+$input = [];
+$input[FavourParamsCreator::MODULE] = 'grn.bulletin';
+$input[FavourParamsCreator::TYPE] = 'bulletin_body';
+$input[FavourParamsCreator::ITEM_ID] = $topic_id;
+$input[FavourParamsCreator::SUB_MODULE] = '';
+
+$favourer_old_ids = getFavourTemp($input);
+
+// add favour
+$count = 0;
+$favour = new Favour();
+$favour->setModuleId('grn.bulletin');
+$favour->setSubModuleId('');
+$favour->setType('bulletin_body');
+$favour->setValue($topic_id);
+
+// create favour by user name
+
+
+
+
+// create favour by user ids
+for ($j = $begin_user_id; $j < $begin_user_id + $quantity_user; $j++) {
+    if (array_search($j, $favourer_old_ids) !== false) {
+        continue;
+    }
+    $login_user_name = getLoginUserName($j);
+    if ($login_user_name) {
+        $favour->setFavourerId($j);
+        $favour->setFavourerName($login_user_name);
+    }
+
+    $service->addFavour($favour);
+    $count++;
+}
+
+cb_cli_end("Finished $count records");
+
+function getLoginUserName($id)
+{
+    global $uum;
+    $user_info = $uum->getUserInfo(
+        $id,
+        null,
+        0,
+        -1,
+        null,
+        true
+    );
+
+    if ($user_info) {
+        return $user_info['col_display_name'];
+    }
+
+    return false;
+}
+
+function getFavourTemp($input)
+{
+    global $services;
+    $favourParamsCreator = new FavourParamsCreator();
+    $favourParams = $favourParamsCreator->createParams($input);
+
+    $services = new FavourService();
+    $favour_collection
+        = $services->getFavourCollection(
+        $favourParams[FavourParamsCreator::MODULE],
+        $favourParams[FavourParamsCreator::TYPE],
+        $favourParams[FavourParamsCreator::VALUE],
+        $favourParams[FavourParamsCreator::SUB_MODULE]
+    );
+
+    require_once('fw/date.csp');
+    $users_id = [];
+    foreach ($favour_collection as $eachFavour) {
+        $favourerId = $eachFavour->getFavourerId();
+        $users_id[] = $favourerId;
+    }
+
+    return $users_id;
+}
