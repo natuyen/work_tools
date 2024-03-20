@@ -8,19 +8,21 @@ def ARCHIVE_FOLDER = "${ARCHIVE_FOLDER}"
 
 def GAROON_ARCHIVE
 def GAROON_ARCHIVE_PATH
-def INSTALL_METHOD = "${INSTALL_METHOD}"
-def IS_UPGRADE_SS = false
-def IS_DESTROY_SS = IS_DESTROY_SERVICESET.toBoolean()
+// def INSTALL_METHOD = "${INSTALL_METHOD}"
+def IS_UPGRADE_SS = IS_UPGRADE_SERVICESET.toBoolean()
+// def IS_DESTROY_SS = IS_DESTROY_SERVICESET.toBoolean()
 
 // process install method
-if ( INSTALL_METHOD == "UPGRADE_OLD_SITE" ){
-    IS_UPGRADE_SS = true
-    IS_DESTROY_SS = false
-}
-echo "INSTALL_METHOD:${INSTALL_METHOD}"
-echo "IS_DESTROY_SS:${IS_DESTROY_SS}"
+// if ( INSTALL_METHOD == "UPGRADE_OLD_SITE" ){
+//     IS_UPGRADE_SS = true
+//     IS_DESTROY_SS = false
+// }
+// echo "INSTALL_METHOD:${INSTALL_METHOD}"
+// echo "IS_DESTROY_SS:${IS_DESTROY_SS}"
 //
 //
+echo "IS_UPGRADE_SS:${IS_UPGRADE_SS}"
+
 def NODE_DEVMGR = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR
 
@@ -133,10 +135,9 @@ try {
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
 
                              // destroy service set
-                             if( IS_DESTROY_SS ){
-                                sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
-                             }
-
+//                              if( IS_DESTROY_SS ){
+//                              }
+                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
                              sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
                             
                          }
