@@ -8,11 +8,19 @@ def ARCHIVE_FOLDER = "${ARCHIVE_FOLDER}"
 
 def GAROON_ARCHIVE
 def GAROON_ARCHIVE_PATH
-def IS_UPGRADE_SS = IS_UPGRADE_SERVICESET.toBoolean();
-def IS_DESTROY_SS = IS_DESTROY_SERVICESET.toBoolean();
-def INSTALL_METHOD = "${INSTALL_METHOD}";
+def IS_UPGRADE_SS = false
+def IS_DESTROY_SS = IS_DESTROY_SERVICESET.toBoolean()
+def INSTALL_METHOD = "${INSTALL_METHOD}"
+
+// process install method
+if ( INSTALL_METHOD == "UPGRADE_OLD_SITE" ){
+    IS_UPGRADE_SS = true
+    IS_DESTROY_SS = false
+}
 echo "IS_DESTROY_SS:${IS_DESTROY_SS}"
 echo "INSTALL_METHOD:${INSTALL_METHOD}"
+
+//
 //
 def NODE_DEVMGR = "devmgr-1"
 def WORK_DIR_NODE_DEVMGR
@@ -86,13 +94,6 @@ try {
                 }
             }
 
-            // set description
-            //if( IS_UPGRADE_SS ){
-              //  description = "Update forest site with new archive"
-            //}
-            //else{
-              //  description = "Destroy & Re-Deploy new archive for forest site"
-            //}
             description = "Archive: ${GAROON_ARCHIVE_PATH}"
             currentBuild.description = "${description}"
         }
@@ -119,7 +120,7 @@ try {
                      sh "ls -ltr ${ARCHIVE_FOLDER_BUILD}"
 
                      if( IS_UPGRADE_SS ){
-                         description = "Update Forest"
+                         description = "Update Forest site"
                          currentBuild.description = "${description} ===> " + currentBuild.description
                          sh "echo '${description}'"
                          sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
@@ -127,11 +128,16 @@ try {
                          
                      } else {
                          withEnv(["PYTHONPATH=/usr/local/lumber/lib"]) {
-                             description = "Destroy & Re-Deploy"
+                             description = "Destroy & Re-Deploy Forest site"
                              currentBuild.description = "${description} ===> " + currentBuild.description
                              sh "echo '${description}'"
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
-                             sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
+
+                             # destroy service set
+                             if( IS_DESTROY_SS ){
+                                sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
+                             }
+
                              sh "/usr/local/lumber/sbin/lumber-deploy --no-wait-nginxc-update-all --no-update-status ${SERVICESET_NAME} ${ARCHIVE_FOLDER_BUILD}"
                             
                          }
