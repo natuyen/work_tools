@@ -133,7 +133,7 @@ try {
                              sh "echo '${description}'"
                              sh "update-garoon-static ${ARCHIVE_FOLDER_BUILD}/garoon*"
 
-                             # destroy service set
+                             // destroy service set
                              if( IS_DESTROY_SS ){
                                 sh "/usr/local/lumber/sbin/lumber-destroy --no-update-status ${SERVICESET_NAME}"
                              }
