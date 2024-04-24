@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+  xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:schedule_services="http://wsdl.cybozu.co.jp/schedule/2008">
+  <SOAP-ENV:Header>
+    <Action SOAP-ENV:mustUnderstand="1"
+      xmlns="http://schemas.xmlsoap.org/ws/2003/03/addressing">ScheduleAddEvents
+    </Action>
+    <Security
+      xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" SOAP-ENV:mustUnderstand="1"
+      xmlns="http://schemas.xmlsoap.org/ws/2002/12/secext">
+      <UsernameToken wsu:Id="id">
+        <Username>Administrator</Username>
+        <Password>cybozu</Password>
+      </UsernameToken>
+    </Security>
+    <Timestamp SOAP-ENV:mustUnderstand="1" Id="id"
+      xmlns="http://schemas.xmlsoap.org/ws/2002/07/utility">
+      <Created>2037-08-12T14:45:00Z</Created>
+      <Expires>2037-08-12T14:45:00Z</Expires>
+    </Timestamp>
+    <Locale>en</Locale>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ScheduleAddEvents>
+      <parameters>
+        <schedule_event
+          xmlns="" id="1" 
+          event_type="repeat" version="111111111111111111" public_type="public" 
+          detail="repeat week 17">
+          <members>
+            <member>
+              <user id="1"></user>
+            </member>
+          </members>
+          <repeat_info>
+            <condition 
+              type="week" 
+              start_date="2024-04-25" 
+              end_date="2024-05-25" 
+              start_time="08:00:00"
+              end_time="10:00:00" 
+              day="1"
+              week="abc">
+              </condition>
+          </repeat_info>
+        </schedule_event>
+      </parameters>
+    </ScheduleAddEvents>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

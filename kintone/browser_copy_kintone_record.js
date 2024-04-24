@@ -1,5 +1,5 @@
 javascript: (() => {
-    let input = prompt("Nhập tên column bắt đầu và số cột muốn lấy", "Key,Summary");
+    let input = prompt("Input column name to copy", "Key,Summary");
     let inputs = input.split(",");
     let $table = document.querySelector("table.recordlist-consistent-column-width-gaia");
 
@@ -17,7 +17,6 @@ javascript: (() => {
 
     // get column value
     let trs = $table.querySelectorAll("tr.recordlist-row-gaia");
-    let j = 0;
     let output = "";
     trs.forEach(tr => {
         let col_tds = tr.getElementsByTagName("td");
@@ -28,3 +27,7 @@ javascript: (() => {
     console.log(output);
     alert(output);
 })();
+
+/* compress
+javascript:(()=>{let e=prompt("Input column name to copy","Key,Summary").split(","),t=document.querySelector("table.recordlist-consistent-column-width-gaia"),l=t.querySelectorAll("th.recordlist-header-cell-gaia"),r=0,o=[],n="";for(r=0;r<l.length;r++)n=l[r].innerText,e.includes(n)&&o.push(r);let a=t.querySelectorAll("tr.recordlist-row-gaia"),c="";a.forEach(e=>{let t=e.getElementsByTagName("td");c+=o.map(e=>t[e].innerText).join(" : ")+"\n"}),console.log(c),alert(c)})();
+ */
