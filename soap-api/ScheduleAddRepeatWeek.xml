@@ -13,7 +13,7 @@
       xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" SOAP-ENV:mustUnderstand="1"
       xmlns="http://schemas.xmlsoap.org/ws/2002/12/secext">
       <UsernameToken wsu:Id="id">
-        <Username>Administrator</Username>
+        <Username>%USER_NAME%</Username>
         <Password>cybozu</Password>
       </UsernameToken>
     </Security>
@@ -44,7 +44,7 @@
               start_time="08:00:00"
               end_time="10:00:00" 
               day="1"
-              week="abc">
+              week="7">
               </condition>
           </repeat_info>
         </schedule_event>
