@@ -25,9 +25,9 @@ javascript: (() => {
         output += items.join(" : ") + "\n";
     });
     console.log(output);
-    alert(output);
+    prompt("Copy to Clipboard Ctrl+C.", output);
 })();
 
 /* compress
-javascript:(()=>{let e=prompt("Input column name to copy","Key,Summary").split(","),t=document.querySelector("table.recordlist-consistent-column-width-gaia"),l=t.querySelectorAll("th.recordlist-header-cell-gaia"),r=0,o=[],n="";for(r=0;r<l.length;r++)n=l[r].innerText,e.includes(n)&&o.push(r);let a=t.querySelectorAll("tr.recordlist-row-gaia"),c="";a.forEach(e=>{let t=e.getElementsByTagName("td");c+=o.map(e=>t[e].innerText).join(" : ")+"\n"}),console.log(c),alert(c)})();
+javascript:(()=>{let e=prompt("Input column name to copy","Key,Summary").split(","),t=document.querySelector("table.recordlist-consistent-column-width-gaia"),l=t.querySelectorAll("th.recordlist-header-cell-gaia"),r=0,o=[],a="";for(r=0;r<l.length;r++)a=l[r].innerText,e.includes(a)&&o.push(r);let n=t.querySelectorAll("tr.recordlist-row-gaia"),i="";n.forEach(e=>{let t=e.getElementsByTagName("td");i+=o.map(e=>t[e].innerText).join(" : ")+"\n"}),console.log(i),prompt("Copy to Clipboard Ctrl+C.",i)})();
  */

@@ -39,12 +39,11 @@
           <repeat_info>
             <condition 
               type="week" 
-              start_date="2024-04-25" 
+              start_date="2024-05-10"
               end_date="2024-05-25" 
               start_time="08:00:00"
-              end_time="10:00:00" 
-              day="1"
-              week="7">
+              end_time="10:00:00"
+              week="1,a">
               </condition>
           </repeat_info>
         </schedule_event>
