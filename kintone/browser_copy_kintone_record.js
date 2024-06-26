@@ -1,4 +1,14 @@
 javascript: (() => {
+    function copyToClipboard(data) {
+        navigator.clipboard.writeText(data).then(() => {
+            // on success
+        }, (e) => {
+            // on error
+        });
+        document.execCommand("copy");
+
+    }
+
     let input = prompt("Input column name to copy", "Key,Summary");
     let inputs = input.split(",");
     let $table = document.querySelector("table.recordlist-consistent-column-width-gaia");
@@ -33,14 +43,13 @@ javascript: (() => {
     output += "Story Points: " + total_story_points;
     console.log(output);
 
-    prompt("Copy to Clipboard Ctrl+C.", output);
+    copyToClipboard(output);
 })();
 
 
 
 /* compress
-javascript:(()=>{let e=prompt("Input column name to copy","Key,Summary").split(","),t=document.querySelector("table.recordlist-consistent-column-width-gaia"),l=t.querySelectorAll("th.recordlist-header-cell-gaia"),r=0,o=[],n="",i=0;for(r=0;r<l.length;r++)n=l[r].innerText,e.includes(n)&&o.push(r),"Story points"==n&&(i=r);let a=t.querySelectorAll("tr.recordlist-row-gaia"),c="",s=0;a.forEach(e=>{let t=e.getElementsByTagName("td");c+=o.map(e=>t[e].innerText).join(" : ")+"\n",s+=parseInt(t[i].innerText)}),c+="Story Points: "+s,console.log(c),prompt("Copy to Clipboard Ctrl+C.",c)})();
 
-
+javascript:(()=>{function e(e){navigator.clipboard.writeText(e).then(()=>{},e=>{}),document.execCommand("copy")}let t=prompt("Input column name to copy","Key,Summary").split(","),r=document.querySelector("table.recordlist-consistent-column-width-gaia"),l=r.querySelectorAll("th.recordlist-header-cell-gaia"),o=0,n=[],i="",c=0;for(o=0;o<l.length;o++)i=l[o].innerText,t.includes(i)&&n.push(o),"Story points"==i&&(c=o);let a=r.querySelectorAll("tr.recordlist-row-gaia"),s="",m=0;a.forEach(e=>{let t=e.getElementsByTagName("td");s+=n.map(e=>t[e].innerText).join(" : ")+"\n",m+=parseInt(t[c].innerText)}),s+="Story Points: "+m,console.log(s),e(s)})();
 
 */
