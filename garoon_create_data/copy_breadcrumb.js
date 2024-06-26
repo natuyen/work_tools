@@ -1,12 +1,16 @@
 javascript: (() => {
-    function copyToClipboard(data) {
-        navigator.clipboard.writeText(data).then(() => {
-            // on success
-        }, (e) => {
-            // on error
-        });
-        document.execCommand("copy");
-
+    function copyToClipboard(text) {
+        let input = document.createElement('textarea');
+        input.innerHTML = text;
+        document.body.appendChild(input);
+        input.select();
+        let result = document.execCommand('copy');
+        document.body.removeChild(input);
+        if (result) {
+            alert("Copy to Clipboard successfully!");
+        } else {
+            alert("Copy to Clipboard failed!");
+        }
     }
 
     // user view
@@ -36,9 +40,3 @@ javascript: (() => {
     }
 
 })();
-
-/* compress
-
-javascript:(()=>{function e(e){navigator.clipboard.writeText(e).then(()=>{},e=>{}),document.execCommand("copy")}let l,i=document.querySelectorAll("div.global_navi span.globalNavi-item-grn"),n=document.querySelector("div.site-posotion-system-grn div.global_navi"),t="";if(i.length>0){let o=[];(l=i).forEach(e=>{o.push(e.innerText)});let a=document.querySelector("div.global_navi span.globalNavi-item-last-grn");o.push(a.innerText),t=o.join(" > ")}else n&&(t=n.innerText.trim());t.length>0&&e(t)})();
-
- */
