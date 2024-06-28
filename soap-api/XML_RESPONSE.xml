@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope
+  xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:schedule="http://wsdl.cybozu.co.jp/schedule/2008">
+  <soap:Header><vendor>Cybozu</vendor><product>Garoon</product><product_type>1</product_type><version>6.4.0</version><apiversion>6.4.0</apiversion></soap:Header>
+  <soap:Body>
+<schedule:ScheduleAddEventsResponse>
+<returns>
+          <schedule_event id="128"
+           event_type="repeat" 
+           public_type="public" 
+           
+           detail="repeat&#x20;week&#x20;17" 
+            
+           version="1715217066"
+           timezone="Asia/Tokyo"
+           
+           allday="false" 
+           start_only="false"
+           
+                      >
+           
+    <members xmlns="http://schemas.cybozu.co.jp/schedule/2008">
+                        <member>
+            <user id="1" name="Administrator" order="0"/>
+        </member>
+                                    </members>
+
+    
+        
+        <repeat_info xmlns="http://schemas.cybozu.co.jp/schedule/2008">
+      <condition type="week" day="0"  
+      week="0,1,2,3" start_date="2024-05-10" end_date="2024-05-25"
+      start_time="08:00:00" end_time="10:00:00"/>
+      <exclusive_datetimes>
+            </exclusive_datetimes>
+    </repeat_info>
+           
+                
+     
+            
+    </schedule_event>
+  </returns>
+</schedule:ScheduleAddEventsResponse>
+  </soap:Body>
+</soap:Envelope>
