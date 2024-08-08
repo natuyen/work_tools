@@ -1,0 +1,100 @@
+<?php
+/**
+ * This tool to create favour data
+ * ./grn.cgi -Cq code/command/create_favours_v2.csp code/command/bulletin_body.json
+ */
+
+use grn\favour\api_internal\shared\FavourParamsCreator;
+use grn\favour\data\bean\Favour;
+use grn\favour\service\FavourService;
+
+cb_require_role('CommandLine');
+
+if (count($argv) < 2) {
+    echon("Usage: ./grn.cgi -Cq code/command/create_favours_v2.csp code/command/bulletin_body.json");
+    exit;
+}
+$favour_json_file = @$argv[1];
+$favour_data = json_decode(file_get_contents($favour_json_file), true);
+$favourParamsCreator = new FavourParamsCreator();
+$favour_params = $favourParamsCreator->createParams($favour_data);
+
+// user
+$begin_user_id = $favour_params['beginUserId'];
+$quantity_user = $favour_params['quantityUser'];
+
+$service = new FavourService();
+$favourer_old_ids = getFavourCurrentUserIds($favour_params);
+
+// create template favour data
+$count = 0;
+$favour = new Favour();
+$favour->setModuleId($favour_params[FavourParamsCreator::MODULE]);
+$favour->setSubModuleId($favour_params[FavourParamsCreator::SUB_MODULE]);
+$favour->setType($favour_params[FavourParamsCreator::TYPE]);
+$favour->setValue($favour_params[FavourParamsCreator::VALUE]);
+
+// create favour by user name
+for ($j = $begin_user_id; $j < $begin_user_id + $quantity_user; $j++) {
+    if (array_search($j, $favourer_old_ids) !== false) {
+        continue;
+    }
+    $login_user_name = getLoginUserName($j);
+    if ($login_user_name) {
+        $favour->setFavourerId($j);
+        $favour->setFavourerName($login_user_name);
+    }
+
+    echon("Create favour for user: {$login_user_name}");
+    $service->addFavour($favour);
+    $count++;
+}
+
+echon("Finished {$count} users.");
+
+function getLoginUserName($id)
+{
+    $uum = cb_lwc_uum();
+    $user_info = $uum->getUserInfo(
+        $id,
+        null,
+        0,
+        -1,
+        null,
+        true
+    );
+
+    if ($user_info) {
+        return $user_info['col_display_name'];
+    }
+
+    return false;
+}
+
+function getFavourCurrentUserIds($favour_params)
+{
+    global $services;
+
+    $services = new FavourService();
+    $favour_collection
+        = $services->getFavourCollection(
+        $favour_params[FavourParamsCreator::MODULE],
+        $favour_params[FavourParamsCreator::TYPE],
+        $favour_params[FavourParamsCreator::VALUE],
+        $favour_params[FavourParamsCreator::SUB_MODULE]
+    );
+
+    require_once('fw/date.csp');
+    $users_id = [];
+    foreach ($favour_collection as $eachFavour) {
+        $favourerId = $eachFavour->getFavourerId();
+        $users_id[] = $favourerId;
+    }
+
+    return $users_id;
+}
+
+function echon($message)
+{
+    echo("{$message}\n");
+}
