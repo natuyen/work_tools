@@ -2,6 +2,6 @@
   "module":"grn.bulletin",
   "type": "bulletin_body",
   "topicId":"2",
-  "beginUserId":"2",
+  "beginUserId":"1",
   "quantityUser":"35"
 }

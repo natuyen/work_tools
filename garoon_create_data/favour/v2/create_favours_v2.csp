@@ -36,6 +36,7 @@ $favour->setValue($favour_params[FavourParamsCreator::VALUE]);
 
 // create favour by user name
 for ($j = $begin_user_id; $j < $begin_user_id + $quantity_user; $j++) {
+    $count++;
     if (array_search($j, $favourer_old_ids) !== false) {
         continue;
     }
@@ -43,11 +44,10 @@ for ($j = $begin_user_id; $j < $begin_user_id + $quantity_user; $j++) {
     if ($login_user_name) {
         $favour->setFavourerId($j);
         $favour->setFavourerName($login_user_name);
+        $favour->setTimestamp(time() + $count);
+        echon("Create favour for user: {$login_user_name}");
+        $service->addFavour($favour);
     }
-
-    echon("Create favour for user: {$login_user_name}");
-    $service->addFavour($favour);
-    $count++;
 }
 
 echon("Finished {$count} users.");
