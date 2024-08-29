@@ -1,0 +1,49 @@
+<?php
+/**
+ * This tool to create favour data
+ * ./grn.cgi -Cq code/command/create_favours_v2.csp code/command/bulletin_body.json
+ */
+
+require_once('fw/i18n.csp');
+require_once('schedule/resources.csp');
+
+cb_require_role('CommandLine');
+
+if (count($argv) < 2) {
+    echon("Usage: ./grn.cgi -Cq code/command/create_facilites.csp 1000");
+    exit;
+}
+
+$quantity = intval(@$argv[1]);
+
+$login = cb_get_login_user();
+for ($i = 0; $i < $quantity; $i++) {
+    $input = [];
+    $input['facilityName-def'] = "fa{$i}";
+    $input['code'] = "fa{$i}";
+    $input['memo'] = '';
+    $input['fagid'] = null;
+
+    $inputLocaleNameArray
+        = getMultiLanguageText(GRN_SCHEDULE_ELEMENT_NAME_FACILITY, $input);
+
+    require_once('schedule/facility_system_logic.csp');
+    $system_logic = GRN_Facility_SystemLogic::getInstance();
+    echon("Add facility: {$input['code']}");
+    $system_logic->addFacility(
+        $login,
+        $inputLocaleNameArray,
+        $input['code'],
+        '',
+        $input['fagid']
+    );
+
+
+}
+
+function echon($message)
+{
+    echo("{$message}\n");
+    ob_flush();
+    flush();
+}
