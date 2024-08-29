@@ -14,10 +14,11 @@ if (count($argv) < 2) {
     exit;
 }
 
-$quantity = intval(@$argv[1]);
+$max_faclitiy_id = getMaxFacilityId();
+$quantity = $max_faclitiy_id + intval(@$argv[1]);
 
 $login = cb_get_login_user();
-for ($i = 0; $i < $quantity; $i++) {
+for ($i = $max_faclitiy_id + 1; $i <= $quantity; $i++) {
     $input = [];
     $input['facilityName-def'] = "fa{$i}";
     $input['code'] = "fa{$i}";
@@ -37,8 +38,6 @@ for ($i = 0; $i < $quantity; $i++) {
         '',
         $input['fagid']
     );
-
-
 }
 
 function echon($message)
@@ -46,4 +45,14 @@ function echon($message)
     echo("{$message}\n");
     ob_flush();
     flush();
+}
+
+function getMaxFacilityId()
+{
+    $db = cb_get_app_db('schedule');
+    $query = 'SELECT MAX(_id) AS max_id FROM tab_grn_facility_facility;';
+    $result = $db->query($query);
+    $row = $db->fetch_assoc($result);
+
+    return intval($row['max_id'] ?? 0);
 }
