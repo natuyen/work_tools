@@ -10,7 +10,7 @@ require_once('schedule/resources.csp');
 cb_require_role('CommandLine');
 
 if (count($argv) < 2) {
-    echon("Usage: ./grn.cgi -Cq code/command/create_facilites.csp 1000");
+    echon("Usage: ./grn.cgi -Cq code/command/create_facilities.csp 1000");
     exit;
 }
 
