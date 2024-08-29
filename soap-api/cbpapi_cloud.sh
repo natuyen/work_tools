@@ -2,7 +2,7 @@
 echo "------------------------------------------------------------------------------------------------"
 XmlFile=$1
 source config.ini
-ApiUrl=${URL}/g/cbpapi/${MODULE}/api.csp
+ApiUrl=${URL_CLOUD}/g/cbpapi/${MODULE}/api.csp
 echo "Api Url: ${ApiUrl}"
 echo "XmlFile: ${XmlFile}"
 echo "Response:"

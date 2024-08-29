@@ -2,5 +2,5 @@
 - It is used to create huge facilities data
 - Copy tool to "cbgrn/code/command" folder
 - cd "cbgrn" folder
-- Run:
-  - ./grn.cgi -Cq code/command/create_facilities.csp 10000 
+- Example: Create 1000 facilities
+  - ./grn.cgi -Cq code/command/create_facilities.csp 1000
