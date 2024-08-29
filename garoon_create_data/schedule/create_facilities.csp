@@ -43,7 +43,6 @@ for ($i = $max_faclitiy_id + 1; $i <= $quantity; $i++) {
 function echon($message)
 {
     echo("{$message}\n");
-    ob_flush();
     flush();
 }
 
