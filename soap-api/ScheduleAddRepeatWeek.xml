@@ -14,7 +14,7 @@
       xmlns="http://schemas.xmlsoap.org/ws/2002/12/secext">
       <UsernameToken wsu:Id="id">
         <Username>%USER_NAME%</Username>
-        <Password>cybozu</Password>
+        <Password>%PASSWORD%</Password>
       </UsernameToken>
     </Security>
     <Timestamp SOAP-ENV:mustUnderstand="1" Id="id"
@@ -43,7 +43,7 @@
               end_date="2024-05-25" 
               start_time="08:00:00"
               end_time="10:00:00"
-              week="1,a">
+              week="1">
               </condition>
           </repeat_info>
         </schedule_event>
