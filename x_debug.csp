@@ -1,0 +1,191 @@
+<?php
+require_once('prepend.csp');
+
+function echon( $var,$title="")
+{
+    if($title)
+    {
+        echo($title.':');
+    }
+    print_r($var);
+    echo("\n");
+}
+
+// print value of variable on browser
+function x_print( $var, $title = '')
+{
+    $backtrace = debug_backtrace();
+    $line_of_count = '';
+    if (count ($backtrace) > 0)
+    {
+        $line_of_count = sprintf('==>Debug Line: "%s" line %s.', $backtrace[0]['file'], $backtrace[0]['line']) ;
+    }
+
+    // process title
+    $title = (strlen($title) == 0) ? '***' : $title;
+    // Web
+    if( array_key_exists('HTTP_HOST', $_SERVER))
+    {
+        echo('----------------<br>');
+        echo($line_of_count."<br>");
+        echo("<b>{$title}</b>:<br>");
+        echo('<pre>');
+        // show value
+        if( !$var )
+            var_dump($var);
+        else
+            print_r($var);
+        echo('</pre><br>');
+    }
+    else // Command line
+    {
+        echo("----------------\n");
+        echo($line_of_count."\n");
+        echo("{$title}:");
+        // show value
+        if( !$var )
+            var_dump($var);
+        else
+            print_r($var);
+        echo("\n");
+    }
+}
+
+// print value of variable on browser
+function x_print_cmd( $var, $title = '')
+{
+    echo(sprintf("-------%s----------\n", $title));
+
+    if( !$var )
+        var_dump($var);
+    else
+        print_r($var);
+
+    echo(sprintf("\n", $title));
+}
+
+// backtrace string
+function x_backtrace()
+{
+    //ob_start();
+    $backtrace = debug_backtrace();
+    foreach( array_keys($backtrace) as $key )
+    {
+        if( array_key_exists( 'object', $backtrace[$key] ) )
+        {
+            $backtrace[$key]['object'] = get_class($backtrace[$key]['object']) . ' object';
+        }
+        if( array_key_exists( 'args', $backtrace[$key] ) )
+        {
+            $args = array();
+            foreach( $backtrace[$key]['args'] as $arg )
+            {
+                $args[] = @(string)$arg;
+            }
+            $backtrace[$key]['args'] = $args;
+        }
+    }
+    //print_r($backtrace);
+    //echo("\n");
+    //$message = ob_get_contents();
+    //ob_end_clean();
+
+    //
+    return $backtrace;
+}
+
+function x_write( $file_name, $var ='', $title='', $log_backtrace=true )
+{
+
+    // get var string
+    if( is_null($var) || is_bool($var) )
+    {
+        ob_start();
+        var_dump($var);
+        $message_str = ob_get_contents();
+        ob_end_clean();
+    }
+    else
+    {
+        $message_str = print_r($var, true);
+    }
+
+    global $G_INPUT;
+    /* global $G_container_base;
+    $uum = $G_container_base->getInstance( 'uum' );
+    $login_user = $uum->getLoginUser();
+    $login_user_info = '';
+    if( is_a($login_user,'CB_User') )
+    {
+        $login_user_info=sprintf('login_name=%s,uid=%s',$login_user->get('foreign_key'),$login_user->getOID());
+    } */
+
+    $environment = array( //'HTTP_COOKIE'=>@$_SERVER['HTTP_COOKIE'],
+        //'HTTP_HOST'=>@$_SERVER['HTTP_HOST'],
+        //'LOGIN_USER'=>$login_user_info,
+        'PAGE'=>@cb_get_pagename(),
+        //'G_INPUT'=>$G_INPUT,
+        'BACKTRACE'=> $log_backtrace ? x_backtrace() : null,
+    );
+
+    // write log
+    $log_file_name = sprintf( "%s/%s.log", cb_basedir(), $file_name );
+    $log_file = @fopen( $log_file_name , 'a' );
+    if( is_resource($log_file) )
+    {
+        $log_content = str_repeat("=",130). "\n";
+        $log_content .= ">>>>>>Title: {$title}\n";
+        //$current_ts = microtime(true);
+        //$log_content .= '>>DATE: ' . udate('Y-m-d H:i:s:u T', $current_ts).', timestamp='.$current_ts ."\n";
+        $current_ts = time();
+        $log_content .= '>>DATE: ' . date('Y-m-d H:i:s T', $current_ts).', timestamp='.$current_ts ."\n";
+        $log_content .= ">>VALUE:\n".$message_str . "\n";
+        $log_content .= ">>Environment:\n". print_r($environment,true)."\n";
+
+        fputs( $log_file, $log_content );
+        fclose( $log_file );
+    }
+}
+
+//-----Count thời gian chạy code
+function x_start()
+{
+    $start = (float) array_sum(explode(' ',microtime()));
+    return array('time'=> $start, 'memory'=>memory_get_usage());
+}
+
+function x_count($file_name, $start, $message='', $title = '')
+{
+    $end = (float) array_sum(explode(' ',microtime()));
+    $time = $end-$start['time'];
+    $memory = memory_get_usage()-$start['memory'];
+    $content = '';
+    $content .= $message. "\n";
+    $content .= "Export time: ". date("Y-m-d G:i:s T") . "\n";
+    $content .= "Processing time: ". sprintf("%.2f", $time )." seconds" . "\n";
+    $content .= "Memory: ". number_format($memory) . " bytes \n";
+    // write log
+    $log_file_name = sprintf( "%s/%s.log", cb_basedir(), $file_name );
+    $log_file = @fopen( $log_file_name , 'a' );
+    if( is_resource($log_file) )
+    {
+        $log_content = str_repeat("=",100). "\n";
+        $log_content .= ">>Title: {$title}\n";
+        $log_content .= $content;
+        fputs( $log_file, $log_content );
+        fclose( $log_file );
+    }
+}
+
+//echo udate('Y-m-d H:i:s:u');
+function udate($format, $utimestamp = null) {
+    if (is_null($utimestamp))
+        $utimestamp = microtime(true);
+
+    $timestamp = floor($utimestamp);
+    $milliseconds = round(($utimestamp - $timestamp) * 1000);
+
+    return date(preg_replace('`(?<!\\\\)u`', $milliseconds, $format), $timestamp);
+}
+
+
