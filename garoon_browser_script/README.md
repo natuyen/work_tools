@@ -6,4 +6,4 @@ This tool is used to copy Garoon Breadcrumb faster for report
 
 # input_license.js
 This tool is used to input Garoon License faster
-![copy_breadcrumb_plus](copy_breadcrumb_plus.png){ width=50% }
+<img src="copy_breadcrumb_plus.png" width="70%">
