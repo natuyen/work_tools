@@ -1,15 +1,15 @@
 <?php
 require_once('prepend.csp');
 
-function echon( $var,$title="")
-{
-    if($title)
-    {
-        echo($title.':');
-    }
-    print_r($var);
-    echo("\n");
-}
+//function echon( $var,$title="")
+//{
+//    if($title)
+//    {
+//        echo($title.':');
+//    }
+//    print_r($var);
+//    echo("\n");
+//}
 
 // print value of variable on browser
 function x_print( $var, $title = '')
@@ -123,9 +123,9 @@ function x_write( $file_name, $var ='', $title='', $log_backtrace=true )
     $environment = array( //'HTTP_COOKIE'=>@$_SERVER['HTTP_COOKIE'],
         //'HTTP_HOST'=>@$_SERVER['HTTP_HOST'],
         //'LOGIN_USER'=>$login_user_info,
-        'PAGE'=>@cb_get_pagename(),
+//        'PAGE'=>@cb_get_pagename(),
         //'G_INPUT'=>$G_INPUT,
-        'BACKTRACE'=> $log_backtrace ? x_backtrace() : null,
+//        'BACKTRACE'=> $log_backtrace ? x_backtrace() : null,
     );
 
     // write log
@@ -133,21 +133,36 @@ function x_write( $file_name, $var ='', $title='', $log_backtrace=true )
     $log_file = @fopen( $log_file_name , 'a' );
     if( is_resource($log_file) )
     {
-        $log_content = str_repeat("=",130). "\n";
-        $log_content .= ">>>>>>Title: {$title}\n";
+//        $log_content = str_repeat("=",130). "\n";
+//        $log_content .= ">>>>>>Title: {$title}\n";
         //$current_ts = microtime(true);
         //$log_content .= '>>DATE: ' . udate('Y-m-d H:i:s:u T', $current_ts).', timestamp='.$current_ts ."\n";
-        $current_ts = time();
-        $log_content .= '>>DATE: ' . date('Y-m-d H:i:s T', $current_ts).', timestamp='.$current_ts ."\n";
-        $log_content .= ">>VALUE:\n".$message_str . "\n";
-        $log_content .= ">>Environment:\n". print_r($environment,true)."\n";
+//        $current_ts = time();
+//        $log_content .= '>>DATE: ' . date('Y-m-d H:i:s T', $current_ts).', timestamp='.$current_ts ."\n";
+//        $log_content .= ">>VALUE:\n".$message_str . "\n";
+//        $log_content .= ">>Environment:\n". print_r($environment,true)."\n";
 
-        fputs( $log_file, $log_content );
+//        fputs( $log_file, $log_content );
+        fputs( $log_file, $message_str . "\n");
         fclose( $log_file );
     }
 }
 
 //-----Count thời gian chạy code
+function x_measure_start()
+{
+    return (float)array_sum(explode(' ', microtime()));
+}
+
+function x_measure_end($start, $title = '')
+{
+    $time_count = x_measure_start() - $start;
+    $content = "======>>Count time: <{$title}>: ";
+    $content .= "Date: " . date("Y-m-d G:i:s T") . " - ";
+    $content .= "Processing time: " . sprintf("%.3f", $time_count) . " seconds" . "\n";
+    cb_dump($content);
+}
+
 function x_start()
 {
     $start = (float) array_sum(explode(' ',microtime()));

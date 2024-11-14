@@ -1,0 +1,86 @@
+<?php
+
+cb_require_role('CommandLine');
+
+require_once('grn/cli.csp');
+
+cb_cli_start();
+
+//Administratorで実行（自動削除ロジック内でログインユーザーのIDを使用している箇所があるので、Administratorでログインしておく）
+$uum = cb_lwc_uum();
+$admin = $uum->getUser(GRN_UUM_ADMINISTRATION_USER);
+$uum->loginAs($admin);
+
+$count_user = 0;
+// create group
+$group_begin_number = getMaxTableId('tab_cb_group') + 1;
+$group_quantity = 100;
+$count_group = 0;
+// create parent group
+for ($i = $group_begin_number; $i < $group_begin_number + $group_quantity; $i++) {
+    $group_name = "G{$i}";
+    $parent_id = createGroup($group_name);
+    if ($i == $group_begin_number) {
+        createUser($parent_id);
+    }
+
+//    // create child group
+//    for ($j = 1; $j <= $group_quantity; $j++) {
+//        $child_name = "{$group_name}-{$j}";
+//        createGroup($child_name, $parent_id);
+//    }
+}
+
+$message = 'Quantity of group: ' . $count_group;
+$message .= 'Quantity of user: ' . $count_user;
+
+cb_cli_end($message);
+
+function createGroup($group_name = '', $parent_id = '')
+{
+    global $uum, $count_group;
+    $inputLocalNameArray['def'] = $group_name;
+    $group = $uum->addGroup($inputLocalNameArray, $group_name, '', $parent_id);
+    $count_group++;
+    echon('Create group:' . $group_name);
+
+    return $group->getOID();
+}
+
+function createUser($parent_group_id = 0)
+{
+    global $uum, $count_user;
+    $user_name_prefix = 'u';
+    $begin_number = getMaxTableId('tab_cb_user') + 1;
+    $quantity = 5000;
+
+    for ($i = $begin_number; $i < $begin_number + $quantity; $i++) {
+        $user_name_value = "{$user_name_prefix}{$i}";
+        $user_info = ['display_name' => $user_name_value, 'foreign_key' => $user_name_value];
+        $user = $uum->addUser($user_info);
+        $user_id = $user->getOID();
+        $uum->changePassword($user_id, null, 'cybozu', true, true);
+        if ($parent_group_id > 0) {
+            $uum->setUserGroups($user_id, [$parent_group_id]);
+        }
+
+        $count_user++;
+        echon('Create user:' . $user_name_value);
+    }
+}
+
+function getMaxTableId($table_name)
+{
+    $db = cb_get_master_db();
+    $query = "SELECT MAX(_id) AS max_id FROM {$table_name};";
+    $result = $db->query($query);
+    $row = $db->fetch_assoc($result);
+
+    return intval($row['max_id'] ?? 0);
+}
+
+function echon($message)
+{
+    echo("{$message}\n");
+    flush();
+}
